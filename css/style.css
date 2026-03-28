@@ -1,0 +1,586 @@
+/* =========================================
+   1. GRUNDEINSTELLUNGEN & VARIABLEN
+   ========================================= */
+:root {
+    --bg-color: #fafafa;       
+    --text-main: #1a1a1a;        
+    --text-muted: #666666;        
+    --white: #ffffff;
+    --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-main);
+    color: var(--text-main);
+    background-color: var(--bg-color);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased; 
+}
+
+/* =========================================
+   2. TYPOGRAFIE & BUTTONS
+   ========================================= */
+h1, h2, h3 {
+    font-weight: 300; 
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 28px;
+    background-color: var(--text-main);
+    color: var(--white);
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: var(--text-muted);
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--text-main);
+    border: 1px solid var(--text-main);
+}
+
+.btn-outline:hover {
+    background-color: var(--text-main);
+    color: var(--white);
+}
+
+/* =========================================
+   3. KOPFZEILE & NAVIGATION
+   ========================================= */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 5%;
+    background-color: var(--white);
+    border-bottom: 1px solid #eaeaea;
+}
+
+.logo a {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-decoration: none;
+    color: var(--text-main);
+}
+
+.main-nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: color 0.3s ease;
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+    color: var(--text-main);
+    border-bottom: 1px solid var(--text-main);
+    padding-bottom: 4px;
+}
+
+/* =========================================
+   4. HERO-BEREICH (Der erste Eindruck)
+   ========================================= */
+.hero {
+    text-align: center;
+    padding: 8rem 20px;
+    background-color: var(--white);
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.hero p {
+    max-width: 600px;
+    margin: 0 auto 2.5rem auto;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+/* =========================================
+   5. BILDER-GRID (Galerie)
+   ========================================= */
+.featured-artworks {
+    padding: 5rem 5%;
+    text-align: center;
+}
+
+.featured-artworks h2 {
+    font-size: 2rem;
+    margin-bottom: 3rem;
+}
+
+/* Hier passiert die Magie: Das Raster passt sich automatisch der Bildschirmgröße an */
+.artwork-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2.5rem;
+}
+
+.artwork-card {
+    text-align: left;
+    background: var(--white);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    cursor: pointer;
+}
+
+/* Hover-Effekt: Karte hebt sich leicht an */
+.artwork-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.artwork-card img {
+    width: 100%;
+    height: 400px;         /* Alle Bilder werden auf die gleiche Höhe zugeschnitten... */
+    object-fit: cover;     /* ...ohne verzerrt zu werden! */
+    display: block;
+}
+
+.artwork-info {
+    padding: 1.5rem;
+}
+
+.artwork-info h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+}
+
+.artwork-info p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* =========================================
+   6. ABOUT TEASER & FOOTER
+   ========================================= */
+.about-teaser {
+    text-align: center;
+    padding: 6rem 20px;
+    background-color: var(--white);
+    border-top: 1px solid #eaeaea;
+}
+
+.about-teaser h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.about-teaser p {
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+    color: var(--text-muted);
+}
+
+.site-footer {
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--white);
+    border-top: 1px solid #eaeaea;
+    color: #999;
+    font-size: 0.85rem;
+}
+
+/* =========================================
+   7. MOBILE ANPASSUNG (Responsive Design)
+   ========================================= */
+@media (max-width: 768px) {
+    .site-header {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+}
+
+/* =========================================
+   8. GALERIE SEITE (Instagram-Style)
+   ========================================= */
+.gallery-page {
+    padding: 4rem 5% 6rem 5%;
+    max-width: 1200px; /* Begrenzt die maximale Breite, damit es auf großen Monitoren nicht ausufert */
+    margin: 0 auto;
+}
+
+.gallery-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.gallery-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Das Raster: Exakt 3 Spalten, minimaler Abstand */
+.insta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px; /* Sehr schmaler Spalt, typisch für Insta */
+}
+
+/* Die einzelnen Kacheln */
+.insta-item {
+    position: relative;
+    aspect-ratio: 1 / 1; /* Macht das Feld zwingend zu einem perfekten Quadrat! */
+    cursor: pointer;
+    overflow: hidden;
+    background-color: #eee; /* Platzhalter-Farbe, solange das Bild lädt */
+}
+
+.insta-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Füllt das Quadrat aus, ohne das Bild zu verzerren */
+    transition: transform 0.5s ease;
+}
+
+/* Der Hover-Effekt (dunkler Schleier mit Text) */
+.insta-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0; /* Standardmäßig unsichtbar */
+    transition: opacity 0.3s ease;
+}
+
+.insta-item:hover .insta-overlay {
+    opacity: 1; /* Wird sichtbar beim Drüberfahren */
+}
+
+.insta-item:hover img {
+    transform: scale(1.05); /* Leichter Zoom-Effekt des Bildes unter dem Schleier */
+}
+
+.artwork-title {
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-align: center;
+    padding: 0 10px;
+}
+
+/* =========================================
+   9. LIGHTBOX POP-UP (Für hochauflösende Bilder)
+   ========================================= */
+.lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9); /* Fast schwarzer, leicht transparenter Hintergrund */
+    z-index: 1000; /* Liegt über allen anderen Elementen */
+    display: none; /* Ist unsichtbar, bis JavaScript es auf 'flex' setzt */
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* Die "Active" Klasse wird später durch JavaScript hinzugefügt */
+.lightbox.active {
+    display: flex;
+}
+
+.lightbox img {
+    max-width: 90%;
+    max-height: 80vh; /* Darf maximal 80% der Bildschirmhöhe einnehmen */
+    object-fit: contain; /* Bild wird komplett angezeigt, nichts wird abgeschnitten */
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.lightbox-caption {
+    color: white;
+    margin-top: 15px;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    color: white;
+    font-size: 4rem;
+    font-weight: 300;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.3s ease;
+}
+
+.lightbox-close:hover {
+    color: #ccc;
+}
+
+/* Anpassung für Handys (damit es auf kleinen Displays gut aussieht) */
+@media (max-width: 600px) {
+    .insta-grid {
+        gap: 2px;
+    }
+    .artwork-title {
+        font-size: 0.9rem;
+    }
+    .lightbox-close {
+        top: 10px;
+        right: 20px;
+        font-size: 3rem;
+    }
+}
+
+/* =========================================
+   10. ÜBER MICH SEITE
+   ========================================= */
+.about-page {
+    padding: 4rem 5% 6rem 5%;
+    max-width: 1000px; /* Etwas schmaler als die Galerie für bessere Lesbarkeit */
+    margin: 0 auto;
+}
+
+/* Das Grid für Portrait und Text */
+.about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Zwei exakt gleich große Spalten */
+    gap: 4rem;
+    align-items: center; /* Zentriert Bild und Text vertikal zueinander */
+    margin-bottom: 5rem;
+}
+
+.about-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05); /* Leichter, edler Schatten */
+}
+
+.about-text h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Ein hervorgehobenes Zitat oder Einleitungssatz */
+.about-text .lead {
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    border-left: 3px solid var(--text-main);
+    padding-left: 15px;
+}
+
+.about-text p {
+    margin-bottom: 1.5rem;
+    color: var(--text-muted);
+}
+
+/* =========================================
+   11. VITA / AUSSTELLUNGEN
+   ========================================= */
+.vita-section {
+    border-top: 1px solid #eaeaea;
+    padding-top: 4rem;
+}
+
+.vita-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.vita-list {
+    list-style: none;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.vita-list li {
+    display: flex;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px dashed #eaeaea;
+}
+
+.vita-list li:last-child {
+    border-bottom: none;
+}
+
+.vita-year {
+    font-weight: bold;
+    width: 80px; /* Feste Breite für die Jahreszahl, damit die Texte rechts bündig untereinander stehen */
+    flex-shrink: 0;
+    color: var(--text-main);
+}
+
+.vita-event {
+    color: var(--text-muted);
+}
+
+/* Anpassung für Handys */
+@media (max-width: 768px) {
+    .about-grid {
+        grid-template-columns: 1fr; /* Auf Handys: Bild oben, Text unten */
+        gap: 2rem;
+    }
+    
+    .vita-list li {
+        flex-direction: column; /* Jahreszahl über dem Event auf kleinen Bildschirmen */
+        gap: 0.5rem;
+    }
+}
+
+/* =========================================
+   12. KONTAKT SEITE
+   ========================================= */
+.contact-page {
+    padding: 4rem 5% 6rem 5%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.contact-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.contact-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.contact-header p {
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Das Grid: Links Text, Rechts Formular */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr; /* Die Formular-Spalte ist etwas breiter */
+    gap: 4rem;
+}
+
+.contact-info h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.contact-info p {
+    margin-bottom: 1.5rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+}
+
+.contact-info a {
+    color: var(--text-main);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s ease;
+}
+
+.contact-info a:hover {
+    border-color: var(--text-main);
+}
+
+.social-links {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #eaeaea;
+}
+
+/* =========================================
+   13. FORMULAR DESIGN
+   ========================================= */
+.contact-form {
+    background: var(--white);
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03); /* Edler Schatten wie auf der About-Seite */
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+/* Die Eingabefelder elegant stylen */
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    background-color: #fafafa;
+    font-family: var(--font-main);
+    font-size: 1rem;
+    color: var(--text-main);
+    transition: all 0.3s ease;
+}
+
+/* Wenn man in das Feld klickt (Focus) */
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--text-main); /* Rand wird dunkel */
+    background-color: var(--white);
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.05); /* Zarter Leuchteffekt */
+}
+
+/* Button anpassen, damit er die volle Breite einnimmt */
+.contact-form .btn {
+    width: 100%;
+    margin-top: 1rem;
+    cursor: pointer;
+    border: none;
+}
+
+/* Mobile Anpassung */
+@media (max-width: 768px) {
+    .contact-grid {
+        grid-template-columns: 1fr; /* Alles untereinander auf dem Handy */
+        gap: 2rem;
+    }
+    
+    .contact-form {
+        padding: 1.5rem;
+    }
+}

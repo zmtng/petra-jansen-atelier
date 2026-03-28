@@ -3,26 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kunstportfolio | Petra Jansen</title>
+    <title>Home @ Atelier Lutzerath | Petra Jansen</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <header>
-        <h1>Atelier Lutzerath</h1>
-        <nav>
+    <header class="site-header">
+        <div class="logo">
+            <a href="index.html">Petra Jansen - Atelier Lutzerath</a>
+        </div>
+        <nav class="main-nav">
             <ul>
-                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html" class="active">Home</a></li>
                 <li><a href="galerie.html">Galerie</a></li>
                 <li><a href="ueber-mich.html">Über mich</a></li>
+                <li><a href="kontakt.html">Kontakt</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-        <h2>Willkommen in der Galerie</h2>
-        </main>
+        
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Kunst, die bewegt.</h1>
+                <p>Willkommen im digitalen Portfolio von Petra Jansen. Entdecke aktuelle Malereien und Projekte.</p>
+                <a href="galerie.html" class="btn">Zur Galerie</a>
+            </div>
+        </section>
+
+        <section class="featured-artworks">
+            <h2>Ausgewählte Werke</h2>
+            <div class="artwork-grid">
+                
+                <article class="artwork-card" data-full="assets/bilder/Screenshot 2026-03-28 212625.png">
+                    <img loading="lazy" src="assets/bilder/Screenshot 2026-03-28 212625.png">
+                    <div class="artwork-info">
+                        <h3>17. Juli 2022</h3>
+                    </div>
+                </article>
+
+                <article class="artwork-card" data-full="assets/bilder/Screenshot 2026-03-28 212502.png">
+                    <img loading="lazy" src="assets/bilder/Screenshot 2026-03-28 212502.png">
+                    <div class="artwork-info">
+                        <h3>23. Januar 2022</h3>
+                    </div>
+                </article>
+
+                <article class="artwork-card" data-full="assets/bilder/Screenshot 2026-03-28 212440.png">
+                    <img loading="lazy" src="assets/bilder/Screenshot 2026-03-28 212440.png">
+                    <div class="artwork-info">
+                        <h3>20. November 2021</h3>
+                    </div>
+                </article>
+
+        </div>
+        </section>
+
+        <section class="about-teaser">
+            <h2>Hier könnte ein kleiner Schubser auf deine "Über mich" Seite hin. Vielleicht sowas wie:</h2>
+            <h2>Lernen Sie mich kennen.</h2>
+            <p>Jedes Bild erzählt eine eigene Geschichte. Erfahre mehr über meine Inspiration, meine Techniken und meinen Werdegang als Künstlerin.</p>
+            <a href="ueber-mich.html" class="btn btn-outline">Mehr über mich</a>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Sebastian Kaspers. Alle Rechte vorbehalten.</p>
+    </footer>
+
+    <div id="lightbox" class="lightbox">
+        <span class="lightbox-close">&times;</span>
+        <img id="lightbox-img" src="" alt="Großansicht">
+        <p id="lightbox-caption" class="lightbox-caption"></p>
+    </div>
 
     <script src="js/main.js"></script>
+
 </body>
 </html>
