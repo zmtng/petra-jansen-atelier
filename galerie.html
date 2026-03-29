@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galerie @ Art by Petra Jansen</title>
     <link rel="stylesheet" href="css/style.css">
-    <!-- Wir blockieren das JavaScript NICHT mehr! Es startet sofort für die statischen Bilder. -->
+
 </head>
 
 <body class="theme-2 scroll-snap-container">
@@ -132,18 +132,20 @@
         const loadingSlide = document.getElementById('inline-loading-slide');
 
         // Funktion zum Initialisieren der Observer für neue Slides
-        function observeNewSlides(slidesElements) {
-            const dynamicObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const theme = entry.target.getAttribute('data-theme');
-                        if (theme) document.body.className = `scroll-snap-container ${theme}`;
-                        entry.target.classList.add('is-visible');
-                    }
-                });
-            }, { threshold: 0.3 });
+        function observeAddedSlides(slidesElements) {
+            if (typeof window.initAppLogic === 'function') {
+                const dynamicObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const theme = entry.target.getAttribute('data-theme');
+                            if (theme) document.body.className = `scroll-snap-container ${theme}`;
+                            entry.target.classList.add('is-visible');
+                        }
+                    });
+                }, { threshold: 0.3 });
 
-            slidesElements.forEach(slide => dynamicObserver.observe(slide));
+                slidesElements.forEach(slide => dynamicObserver.observe(slide));
+            }
         }
 
         async function loadGallery() {
@@ -158,10 +160,9 @@
                     images.push(doc.data());
                 });
 
-                // Den Ladekreis-Slide entfernen
                 if (loadingSlide) loadingSlide.remove();
 
-                const newSlides = [];
+                const addedElements = [];
                 let themeIndex = 1;
                 
                 images.forEach(img => {
@@ -183,20 +184,16 @@
                         </section>`;
                     
                     mainContainer.insertAdjacentHTML('beforeend', slideHtml);
-                    newSlides.push(mainContainer.lastElementChild);
+                    addedElements.push(mainContainer.lastElementChild);
                     themeIndex = themeIndex === 4 ? 1 : themeIndex + 1;
                 });
 
-                // Footer anhängen
                 const footerHtml = document.getElementById('footer-template').innerHTML;
                 mainContainer.insertAdjacentHTML('beforeend', footerHtml);
-                newSlides.push(mainContainer.lastElementChild);
+                addedElements.push(mainContainer.lastElementChild);
 
-                // Re-Initialisiere die App-Logik für neue Elemente
-                if(typeof window.initAppLogic === 'function') {
-                    window.initAppLogic();
-                }
-                observeNewSlides(newSlides);
+                // NUR die neuen Elemente observieren, ohne die Scroll-Logik zu resetten
+                observeAddedSlides(addedElements);
 
             } catch (error) {
                 console.error("Fehler beim Laden der Galerie:", error);
