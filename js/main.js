@@ -1,9 +1,9 @@
-// Wir packen die Logik in eine globale Funktion, damit wir sie 
-// neu starten können, nachdem Firebase die Bilder geladen hat.
+// Wir packen die Logik in eine globale Funktion (window.initAppLogic), 
+// damit wir sie manuell aufrufen können, sobald Firebase die Bilder geladen hat.
 window.initAppLogic = () => {
     
     // ==========================================
-    // SCROLL-PRÄSENTATIONS-LOGIK
+    // 1. SCROLL-PRÄSENTATIONS-LOGIK
     // ==========================================
     const slides = document.querySelectorAll('.presentation-slide');
     
@@ -17,12 +17,16 @@ window.initAppLogic = () => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const theme = entry.target.getAttribute('data-theme');
-                document.body.className = `scroll-snap-container ${theme}`;
+                if (theme) {
+                    document.body.className = `scroll-snap-container ${theme}`;
+                }
+                // Aktiviere die Text/Bild-Animation für diesen Slide
                 entry.target.classList.add('is-visible');
             }
         });
     }, observerOptions);
 
+    // Observer auf alle (auch die neu geladenen) Slides anwenden
     slides.forEach(slide => {
         slideObserver.observe(slide);
     });
@@ -46,7 +50,7 @@ window.initAppLogic = () => {
             setTimeout(() => { isAnimating = false; }, 1000);
         };
 
-        // Bestehende Event Listener entfernen, falls Funktion doppelt aufgerufen wird
+        // Bestehende Event Listener entfernen, falls Funktion nach Datenbank-Laden doppelt aufgerufen wird
         window.onwheel = null;
         window.ontouchstart = null;
         window.ontouchmove = null;
@@ -76,8 +80,9 @@ window.initAppLogic = () => {
     }
 
     // ==========================================
-    // LIGHTBOX LOGIK
+    // 2. LIGHTBOX LOGIK
     // ==========================================
+    // Sucht jetzt auch die neu geladenen Bilder (.gallery-showcase-item)
     const galleryItems = document.querySelectorAll('.insta-item, .artwork-card, .gallery-showcase-item');
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
@@ -87,12 +92,13 @@ window.initAppLogic = () => {
         // Alte Listener entfernen (Klon-Trick), um doppelte Klicks zu vermeiden
         galleryItems.forEach(oldItem => {
             const item = oldItem.cloneNode(true);
-            oldItem.parentNode.replaceChild(item, oldItem);
+            if (oldItem.parentNode) {
+                oldItem.parentNode.replaceChild(item, oldItem);
+            }
             
             item.addEventListener('click', () => {
                 const fullImageUrl = item.getAttribute('data-full');
-
-
+            
                 if (lightboxImg) {
                     lightboxImg.src = fullImageUrl;
                 }
@@ -119,9 +125,13 @@ window.initAppLogic = () => {
     }
 };
 
-// Standard-Start für alle normalen Seiten (Startseite, Kontakt, etc.)
+// ==========================================
+// 3. SEITEN-START LOGIK
+// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // Wenn 'delayInit' true ist (wie in der Galerie), startet das Skript erst später manuell
+    // Startseiten, Kontakt etc. starten die Logik sofort.
+    // In der galerie.html haben wir <script>window.delayInit = true;</script> gesetzt.
+    // Daher wartet die Galerie ab jetzt, bis Firebase fertig ist und ruft initAppLogic() dann manuell auf.
     if (!window.delayInit) {
         window.initAppLogic();
     }
