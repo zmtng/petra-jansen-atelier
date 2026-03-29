@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galerie @ Art by Petra Jansen</title>
     <link rel="stylesheet" href="css/style.css">
-
 </head>
 
 <body class="theme-2 scroll-snap-container">
@@ -28,7 +27,7 @@
 
     <main id="gallery-main">
         
-        <!-- Folie 1: Intro -->
+        <!-- Folie 1: Intro (Sofort sichtbar) -->
         <section class="slide presentation-slide" data-theme="theme-2">
             <div class="slide-content" style="padding-bottom: 40px;">
                 <h1 class="massive-title">Gesamtwerk</h1>
@@ -45,54 +44,26 @@
             </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- STATISCHE HIGHLIGHT-BILDER (SOFORT SICHTBAR) -->
-        <!-- ========================================== -->
+        <!-- CONTAINER FÜR DYNAMISCHE ELEMENTE -->
+        <div id="dynamic-content"></div>
 
-        <section class="slide presentation-slide" data-theme="theme-3">
-            <div class="slide-content" style="max-width: 1000px; width: 100%;">
-                <div class="gallery-showcase-item" data-full="assets/bilder/Screenshot 2026-03-28 211320.png" style="cursor: pointer;">
-                    <img loading="lazy" class="gallery-showcase-img" src="assets/bilder/Screenshot 2026-03-28 211320.png" alt="Highlight 1" style="max-height: 65vh; width: auto; max-width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border-radius: 6px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'400\'%3E%3Crect width=\'600\' height=\'400\' fill=\'%23eee\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'20\'%3EBild wird geladen...%3C/text%3E%3C/svg%3E'">
-                </div>
-            </div>
-        </section>
-
-        <section class="slide presentation-slide" data-theme="theme-4">
-            <div class="slide-content" style="max-width: 1000px; width: 100%;">
-                <div class="gallery-showcase-item" data-full="assets/bilder/Screenshot 2026-03-28 211402.png" style="cursor: pointer;">
-                    <img loading="lazy" class="gallery-showcase-img" src="assets/bilder/Screenshot 2026-03-28 211402.png" alt="Highlight 1" style="max-height: 65vh; width: auto; max-width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border-radius: 6px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'400\'%3E%3Crect width=\'600\' height=\'400\' fill=\'%23eee\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'20\'%3EBild wird geladen...%3C/text%3E%3C/svg%3E'">
-                </div>
-            </div>
-        </section>
-
-        <section class="slide presentation-slide" data-theme="theme-1">
-            <div class="slide-content" style="max-width: 1000px; width: 100%;">
-                <div class="gallery-showcase-item" data-full="assets/bilder/Screenshot 2026-03-28 211433.png" style="cursor: pointer;">
-                    <img loading="lazy" class="gallery-showcase-img" src="assets/bilder/Screenshot 2026-03-28 211433.png" alt="Highlight 1" style="max-height: 65vh; width: auto; max-width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border-radius: 6px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'400\'%3E%3Crect width=\'600\' height=\'400\' fill=\'%23eee\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'20\'%3EBild wird geladen...%3C/text%3E%3C/svg%3E'">
-                </div>
-            </div>
-        </section>
-
-        <!-- ========================================== -->
-        <!-- LADEHINWEIS FÜR DIE DATENBANK-BILDER       -->
-        <!-- ========================================== -->
-        <section class="slide presentation-slide" id="inline-loading-slide" data-theme="theme-2">
+        <!-- LADEHINWEIS (Wird am Ende der Liste angezeigt, solange noch geladen wird) -->
+        <section class="slide presentation-slide" id="db-loader-slide" data-theme="theme-2" style="display: none;">
             <div class="slide-content" style="text-align: center; color: var(--text-muted);">
                 <div style="display: inline-block; width: 30px; height: 30px; border: 2px solid rgba(0,0,0,0.1); border-top-color: var(--text-main); border-radius: 50%; animation: spin 1s infinite linear; margin-bottom: 1rem;"></div>
                 <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
-                <p>Lade weitere Bilder aus dem Archiv...</p>
+                <p id="loader-text">Weitere Werke werden geladen...</p>
             </div>
         </section>
 
-        <!-- HIER WERDEN DIE DATENBANK-BILDER EINGEFÜGT -->
-        
     </main>
 
-    <!-- Letzte Folie (Wird ebenfalls dynamisch ans Ende gehängt) -->
+    <!-- Footer Template (Wird ganz am Ende eingefügt) -->
     <div id="footer-template" style="display: none;">
         <section class="slide presentation-slide" data-theme="theme-4">
             <div class="slide-content">
                 <h2>Interesse an einem Werk?</h2>
+                <p>Lass uns gerne über Verfügbarkeiten und Preise sprechen.</p>
                 <a href="kontakt.html" class="btn btn-large">Kontakt aufnehmen</a>
             </div>
             <footer class="slide-footer">
@@ -101,7 +72,6 @@
         </section>
     </div>
 
-    <!-- Lightbox für die große Ansicht -->
     <div id="lightbox" class="lightbox">
         <span class="lightbox-close">&times;</span>
         <img id="lightbox-img" src="" alt="Großansicht">
@@ -110,7 +80,6 @@
 
     <script src="js/main.js"></script>
 
-    <!-- Firebase SDK für die dynamischen Bilder -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -128,71 +97,79 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const dynamicContainer = document.getElementById('dynamic-gallery-content');
-        const loadingSlide = document.getElementById('inline-loading-slide');
+        const dynamicContainer = document.getElementById('dynamic-content');
+        const loaderSlide = document.getElementById('db-loader-slide');
 
-        async function loadGallery() {
+        // Hilfsfunktion: Fügt eine einzelne Slide zum DOM hinzu
+        function appendSlide(imgData, index) {
+            const themeIndex = (index % 4) + 1;
+            const displayTitle = imgData.title || '';
+            const displaySubtitle = imgData.subtitle || '';
+            
+            const section = document.createElement('section');
+            section.className = 'slide presentation-slide';
+            section.setAttribute('data-theme', `theme-${themeIndex}`);
+            section.innerHTML = `
+                <div class="slide-content" style="max-width: 1000px; width: 100%;">
+                    <div class="gallery-showcase-item" data-full="${imgData.url}" style="cursor: pointer;">
+                        <img loading="lazy" class="gallery-showcase-img" src="${imgData.url}" alt="${displayTitle}" style="max-height: 65vh; width: auto; max-width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border-radius: 6px;">
+                        <div class="gallery-details" style="display: inline-block; margin-top: 15px;">
+                            <h2 class="gallery-title">${displayTitle}</h2>
+                            <p>${displaySubtitle}</p>
+                        </div>
+                    </div>
+                </div>`;
+            
+            dynamicContainer.appendChild(section);
+            
+            // Sofort dem IntersectionObserver aus main.js bekannt machen
+            if (window.initAppLogic) {
+                window.initAppLogic(); 
+            }
+        }
+
+        async function startIncrementalLoading() {
             try {
-                // Login im Hintergrund
                 await signInAnonymously(auth);
                 
-                // DB Abfrage
+                // Wir holen erst mal nur die Metadaten (geht sehr schnell)
                 const q = query(collection(db, 'gallery'), orderBy('timestamp', 'desc'));
                 const querySnapshot = await getDocs(q);
                 
                 const images = [];
-                querySnapshot.forEach((doc) => images.push(doc.data()));
+                querySnapshot.forEach(doc => images.push(doc.data()));
 
-                // 1. Lade-Slide entfernen
-                if (loadingSlide) loadingSlide.remove();
-
-                // 2. Bilder generieren
-                let themeIndex = 1;
-                let htmlBuffer = "";
-                
-                images.forEach(img => {
-                    const currentTheme = `theme-${themeIndex}`;
-                    const displayTitle = img.title ? img.title : '';
-                    const displaySubtitle = img.subtitle ? img.subtitle : '';
+                if (images.length > 0) {
+                    loaderSlide.style.display = 'block';
                     
-                    htmlBuffer += `
-                        <section class="slide presentation-slide" data-theme="${currentTheme}">
-                            <div class="slide-content" style="max-width: 1000px; width: 100%;">
-                                <div class="gallery-showcase-item" data-full="${img.url}" style="cursor: pointer;">
-                                    <img loading="lazy" class="gallery-showcase-img" src="${img.url}" alt="${displayTitle}" style="max-height: 65vh; width: auto; max-width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border-radius: 6px;">
-                                    <div class="gallery-details" style="display: inline-block; margin-top: 15px;">
-                                        <h2 class="gallery-title">${displayTitle}</h2>
-                                        <p>${displaySubtitle}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>`;
-                    themeIndex = themeIndex === 4 ? 1 : themeIndex + 1;
-                });
-
-                // 3. Footer anhängen
-                const footerHtml = document.getElementById('footer-template').innerHTML;
-                htmlBuffer += footerHtml;
-
-                // 4. In den Container einfügen (ohne Sprung!)
-                dynamicContainer.innerHTML = htmlBuffer;
-
-                // 5. WICHTIG: Die neuen Elemente dem Beobachter der main.js hinzufügen
-                // Wir rufen initAppLogic NICHT neu auf, sondern triggern nur die Observer-Erkennung
-                if (window.initAppLogic) {
-                    window.initAppLogic(); 
+                    // Inkrementelles Einfügen: Jedes Bild einzeln mit kurzer Pause
+                    for (let i = 0; i < images.length; i++) {
+                        appendSlide(images[i], i);
+                        // 50ms Pause lässt dem Browser Zeit zum Rendern der UI
+                        await new Promise(resolve => setTimeout(resolve, 50));
+                    }
                 }
 
+                // Ganz am Ende: Footer anhängen
+                const footerHtml = document.getElementById('footer-template').innerHTML;
+                dynamicContainer.insertAdjacentHTML('beforeend', footerHtml);
+                
+                // Loader entfernen
+                loaderSlide.remove();
+                
+                // Letzter Check für die Logik
+                if (window.initAppLogic) window.initAppLogic();
+
             } catch (error) {
-                console.error("Fehler beim Laden der Galerie:", error);
-                if (loadingSlide) {
-                    loadingSlide.innerHTML = '<div class="slide-content"><p style="color: red;">Archiv-Bilder konnten nicht geladen werden.</p></div>';
+                console.error("Fehler beim Laden:", error);
+                if (loaderSlide) {
+                    document.getElementById('loader-text').innerText = "Fehler beim Laden weiterer Bilder.";
                 }
             }
         }
 
-        // Start der Datenbank-Abfrage
-        loadGallery();
+        // Startet sofort im Hintergrund
+        startIncrementalLoading();
     </script>
 </body>
 </html>
