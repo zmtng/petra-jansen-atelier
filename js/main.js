@@ -1,46 +1,41 @@
-// Wir packen die Logik in eine globale Funktion (window.initAppLogic), 
-// damit wir sie manuell aufrufen können, sobald Firebase die Bilder geladen hat.
+// Wir verpacken das gesamte Skript in eine aufrufbare Funktion.
+// So können wir es manuell neu starten, sobald Firebase die Bilder geladen hat!
 window.initAppLogic = () => {
     
     // ==========================================
-    // 1. SCROLL-PRÄSENTATIONS-LOGIK
+    // 1. SCROLL-ANIMATIONEN & OBSERVER
     // ==========================================
     const slides = document.querySelectorAll('.presentation-slide');
     
-    const observerOptions = {
-        root: null, 
-        rootMargin: '0px',
-        threshold: 0.5 
-    };
-
     const slideObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const theme = entry.target.getAttribute('data-theme');
-                if (theme) {
-                    document.body.className = `scroll-snap-container ${theme}`;
-                }
-                // Aktiviere die Text/Bild-Animation für diesen Slide
+                if (theme) document.body.className = `scroll-snap-container ${theme}`;
+                
+                // Hier passiert die Magie: Das Bild wird sichtbar gemacht
                 entry.target.classList.add('is-visible');
             }
         });
-    }, observerOptions);
+    }, { threshold: 0.3 }); // Löst schon aus, wenn das Bild zu 30% sichtbar ist
 
-    // Observer auf alle (auch die neu geladenen) Slides anwenden
-    slides.forEach(slide => {
-        slideObserver.observe(slide);
-    });
+    slides.forEach(slide => slideObserver.observe(slide));
+    if(slides.length > 0) slides[0].classList.add('is-visible');
 
-    if(slides.length > 0) {
-        slides[0].classList.add('is-visible');
-    }
-
-    // --- STRIKTE 1-SLIDE-PRO-SCROLL LOGIK ---
+    // ==========================================
+    // 2. STRIKTE 1-SLIDE-PRO-SCROLL LOGIK
+    // ==========================================
     const container = document.querySelector('.scroll-snap-container');
-    if (container && slides.length > 0) {
+    // Die Variable window.isScrollLogicActive verhindert, dass das Skript doppelt lädt
+    if (container && slides.length > 0 && !window.isScrollLogicActive) {
+        window.isScrollLogicActive = true;
         let currentSlideIndex = 0;
         let isAnimating = false;
-        const lightbox = document.getElementById('lightbox');
+        
+        slides.forEach((slide, index) => {
+            const rect = slide.getBoundingClientRect();
+            if (rect.top >= -50 && rect.top <= 50) currentSlideIndex = index;
+        });
 
         const goToSlide = (index) => {
             if (index < 0 || index >= slides.length) return;
@@ -50,88 +45,67 @@ window.initAppLogic = () => {
             setTimeout(() => { isAnimating = false; }, 1000);
         };
 
-        // Bestehende Event Listener entfernen, falls Funktion nach Datenbank-Laden doppelt aufgerufen wird
-        window.onwheel = null;
-        window.ontouchstart = null;
-        window.ontouchmove = null;
-        window.ontouchend = null;
-
-        window.onwheel = (e) => {
+        window.addEventListener('wheel', (e) => {
+            const lightbox = document.getElementById('lightbox');
             if (lightbox && lightbox.classList.contains('active')) return;
             e.preventDefault();
             if (isAnimating) return;
             if (e.deltaY > 0) goToSlide(currentSlideIndex + 1);
             else if (e.deltaY < 0) goToSlide(currentSlideIndex - 1);
-        };
+        }, { passive: false });
 
         let touchStartY = 0;
-        window.ontouchstart = (e) => { touchStartY = e.touches[0].clientY; };
-        window.ontouchmove = (e) => { 
+        window.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; }, { passive: false });
+        window.addEventListener('touchmove', (e) => { 
+            const lightbox = document.getElementById('lightbox');
             if (lightbox && lightbox.classList.contains('active')) return;
             e.preventDefault(); 
-        };
-        window.ontouchend = (e) => {
+        }, { passive: false });
+        window.addEventListener('touchend', (e) => {
+            const lightbox = document.getElementById('lightbox');
             if (lightbox && lightbox.classList.contains('active')) return;
             if (isAnimating) return;
             const diff = touchStartY - e.changedTouches[0].clientY;
             if (diff > 50) goToSlide(currentSlideIndex + 1);
             else if (diff < -50) goToSlide(currentSlideIndex - 1);
-        };
+        });
     }
 
     // ==========================================
-    // 2. LIGHTBOX LOGIK
+    // 3. LIGHTBOX LOGIK (Vergrößern bei Klick)
     // ==========================================
-    // Sucht jetzt auch die neu geladenen Bilder (.gallery-showcase-item)
-    const galleryItems = document.querySelectorAll('.insta-item, .artwork-card, .gallery-showcase-item');
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const closeBtn = document.querySelector('.lightbox-close');
+    if (!window.isLightboxActive) {
+        window.isLightboxActive = true;
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const closeBtn = document.querySelector('.lightbox-close');
 
-    if (lightbox && galleryItems.length > 0) {
-        // Alte Listener entfernen (Klon-Trick), um doppelte Klicks zu vermeiden
-        galleryItems.forEach(oldItem => {
-            const item = oldItem.cloneNode(true);
-            if (oldItem.parentNode) {
-                oldItem.parentNode.replaceChild(item, oldItem);
-            }
-            
-            item.addEventListener('click', () => {
-                const fullImageUrl = item.getAttribute('data-full');
-            
-                if (lightboxImg) {
-                    lightboxImg.src = fullImageUrl;
+        if (lightbox) {
+            // "Event Delegation": Erlaubt das Klicken auf Bilder, auch wenn sie aus einer Datenbank kommen!
+            document.body.addEventListener('click', (e) => {
+                const item = e.target.closest('.insta-item, .artwork-card, .gallery-showcase-item');
+                if (item) {
+                    const fullImageUrl = item.getAttribute('data-full');
+                    
+                    if (lightboxImg) lightboxImg.src = fullImageUrl;
+                    lightbox.classList.add('active');
                 }
-                lightbox.classList.add('active');
             });
-        });
 
-        const closeLightbox = () => {
-            lightbox.classList.remove('active');
-            setTimeout(() => { if(lightboxImg) lightboxImg.src = ''; }, 300);
-        };
+            const closeLightbox = () => {
+                lightbox.classList.remove('active');
+                setTimeout(() => { if(lightboxImg) lightboxImg.src = ''; }, 300);
+            };
 
-        if(closeBtn) closeBtn.onclick = closeLightbox;
-        
-        lightbox.onclick = (e) => {
-            if (e.target === lightbox) closeLightbox();
-        };
-
-        document.onkeydown = (e) => {
-            if (e.key === 'Escape' && lightbox.classList.contains('active')) {
-                closeLightbox();
-            }
-        };
+            if(closeBtn) closeBtn.addEventListener('click', closeLightbox);
+            lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+        }
     }
 };
 
-// ==========================================
-// 3. SEITEN-START LOGIK
-// ==========================================
+// Startet die Logik automatisch, AUßER auf der Galerie-Seite (da warten wir auf Firebase)
 document.addEventListener('DOMContentLoaded', () => {
-    // Startseiten, Kontakt etc. starten die Logik sofort.
-    // In der galerie.html haben wir <script>window.delayInit = true;</script> gesetzt.
-    // Daher wartet die Galerie ab jetzt, bis Firebase fertig ist und ruft initAppLogic() dann manuell auf.
     if (!window.delayInit) {
         window.initAppLogic();
     }
