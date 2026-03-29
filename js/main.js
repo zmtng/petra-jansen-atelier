@@ -112,29 +112,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const galleryItems = document.querySelectorAll('.insta-item, .artwork-card, .gallery-showcase-item');
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
-    const lightboxCaption = document.getElementById('lightbox-caption');
     const closeBtn = document.querySelector('.lightbox-close');
 
     if (lightbox && galleryItems.length > 0) {
         galleryItems.forEach(item => {
             item.addEventListener('click', () => {
                 const fullImageUrl = item.getAttribute('data-full');
-                let titleText = '';
                 
-            if (item.classList.contains('insta-item')) {
-                titleText = item.querySelector('.artwork-title').innerText;
-            } else if (item.classList.contains('artwork-card')) {
-                // Logik für Startseite
-                titleText = item.querySelector('.artwork-info h3').innerText;
-            } else if (item.classList.contains('gallery-showcase-item')) {
-                // Logik für NEUE Scroll-Galerie-Seite
-                titleText = item.querySelector('.gallery-title').innerText;
-            }
-
             // Lightbox befüllen und öffnen
-            if (lightboxImg && lightboxCaption) {
+            if (lightboxImg) {
                 lightboxImg.src = fullImageUrl;
-                lightboxCaption.innerText = titleText;
             }
             lightbox.classList.add('active');
         });
