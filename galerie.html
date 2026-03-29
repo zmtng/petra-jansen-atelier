@@ -105,41 +105,32 @@
                 // Ladehinweis entfernen
                 document.getElementById('loading-indicator').style.display = 'none';
 
-                // In 3er-Gruppen (Slides) aufteilen
                 let themeIndex = 3; 
-                for (let i = 0; i < images.length; i += 3) {
-                    const chunk = images.slice(i, i + 3);
+                images.forEach(img => {
                     const currentTheme = `theme-${themeIndex}`;
+                    const displayTitle = img.title ? img.title : '';
+                    const displaySubtitle = img.subtitle ? img.subtitle : '';
                     
-                    let slideHtml = `<section class="slide presentation-slide" data-theme="${currentTheme}">
-                                        <div class="gallery-slide-grid">`;
-                    
-                    chunk.forEach(img => {
-                        const displayTitle = img.title ? img.title : '';
-                        const displaySubtitle = img.subtitle ? img.subtitle : '';
-                        
-                        slideHtml += `
+                    let slideHtml = `
+                        <section class="slide presentation-slide" data-theme="${currentTheme}">
                             <div class="gallery-showcase-item" data-full="${img.url}">
                                 <img loading="lazy" class="gallery-showcase-img" src="${img.url}" alt="${displayTitle}">
                                 <div class="gallery-details">
                                     <h2 class="gallery-title">${displayTitle}</h2>
                                     <p>${displaySubtitle}</p>
                                 </div>
-                            </div>`;
-                    });
-
-                    slideHtml += `      </div>
-                                      </section>`;
+                            </div>
+                        </section>`;
                     
                     mainContainer.insertAdjacentHTML('beforeend', slideHtml);
+                    
+                    // Theme rotieren (1 bis 4)
                     themeIndex = themeIndex === 4 ? 1 : themeIndex + 1;
-                }
+                });
 
-                // Ganz am Ende den Footer anhängen
                 const footerSlide = document.getElementById('footer-template').innerHTML;
                 mainContainer.insertAdjacentHTML('beforeend', footerSlide);
 
-                // MAGIE: Wir sagen der main.js, dass die Bilder jetzt da sind und animiert werden dürfen!
                 if(typeof window.initAppLogic === 'function') {
                     window.initAppLogic();
                 }
