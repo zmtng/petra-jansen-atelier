@@ -6,9 +6,9 @@
     <title>Über mich @ Art by Petra Jansen</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="theme-3 fluid-background">
 
-    <header class="site-header">
+    <header class="site-header fixed-header">
         <div class="logo">
             <a href="index.html">Art by Petra Jansen</a>
         </div>
@@ -18,50 +18,48 @@
                 <li><a href="galerie.html">Galerie</a></li>
                 <li><a href="ueber-mich.html" class="active">Über mich</a></li>
                 <li><a href="kontakt.html">Kontakt</a></li>
+                <li><a href="gaestebuch.html">Gästebuch</a></li>
+                <li><a href="datenschutz.html">Datenschutz</a></li>
             </ul>
         </nav>
     </header>
 
-    <main class="about-page">
+    <main class="page-container">
         
-        <section class="about-grid">
-            <div class="about-image">
-                <img src="assets/images/keewo_platzhalter_vita.png">
-            </div>
+        <div class="glass-panel about-panel">
+            <div class="about-grid">
 
-            <div class="about-text">
-                <h1>Platzhalter Titel</h1>
-                <p class="lead">"Hier darf ein schönes Zitat hin :D"</p>
-                
-                <p>Stell dich hier vor....</p>
-                
-                <p>Hier vielleicht ein wenig zu deiner präferierten Kunst- und Schaffensrichtung?</p>
-            </div>
-        </section>
+                <div class="about-image-wrapper">
+                    <img src="assets/images/keewo_platzhalter_vita.png" class="about-img">
+                </div>
 
-        <section class="vita-section">
-            <h2>Ausstellungen</h2>
-            <ul class="vita-list">
-                <li>
-                    <span class="vita-year">Jahr</span>
-                    <span class="vita-event">Titel der Ausstellung, Galerie Name, Stadt</span>
-                </li>
-                <li>
-                    <span class="vita-year">Jahr</span>
-                    <span class="vita-event">Titel der Ausstellung, Galerie Name, Stadt</span>
-                </li>
-                <li>
-                    <span class="vita-year">Jahr</span>
-                    <span class="vita-event">Titel der Ausstellung, Galerie Name, Stadt</span>
-                </li>
-            </ul>
-        </section>
+                <div class="about-text-content">
+                    <h1 class="page-title">Petra Jansen</h1>
+                    
+                    <div class="about-text">
+                        <p>Die künstlerische Entwicklung begann vor rund sieben Jahren im autodidaktischen Arbeiten mit der Pouring-Technik. Ausgehend von diesen experimentellen Anfängen entwickelte sich ein wachsendes Interesse an Form, Struktur und Ausdruck, das schließlich in die gegenständliche Malerei führte.</p>
+                        
+                        <p>Im weiteren künstlerischen Prozess verlagerte sich der Fokus zunehmend vom Abbildhaften hin zur freien, intuitiven Gestaltung. Heute liegt der Schwerpunkt auf der abstrakten Malerei, in der Emotion, Bewegung und Farbwirkung im Zentrum stehen.</p>
+
+                        <p>Zur Vertiefung dieser Ausdrucksform erfolgt aktuell eine Weiterbildung an einer Kunstakademie in Österreich, wo das abstrakte Arbeiten weiterentwickelt und geschärft wird.</p>
+
+                        <p>Gearbeitet wird überwiegend mit Acrylfarben, insbesondere mit Materialien eines Herstellers aus Bludenz (Österreich), deren Qualität und Eigenschaften den künstlerischen Prozess gezielt unterstützen.</p>
+                        
+                        <div class="about-actions">
+                             <a href="galerie.html" class="btn">Meine Werke ansehen</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
 
     </main>
 
-    <footer class="site-footer">
+    <footer class="site-footer simple-footer">
         <p>&copy; 2026 Sebastian Kaspers. Alle Rechte vorbehalten.</p>
     </footer>
 
+    <script src="js/main.js"></script>
 </body>
 </html>

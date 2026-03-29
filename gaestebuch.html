@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gästebuch @ Art by Petra Jansen</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Spezifisches Design für die Gästebuch-Einträge */
+        .guestbook-entries {
+            margin-top: 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .entry-card {
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding-bottom: 0.5rem;
+        }
+
+        .entry-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        .entry-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .entry-message {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            white-space: pre-wrap; /* Erhält Zeilenumbrüche */
+        }
+        
+        .loading-text {
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="theme-2 fluid-background">
+
+    <header class="site-header fixed-header">
+        <div class="logo">
+            <a href="index.html">Art by Petra Jansen</a>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="galerie.html">Galerie</a></li>
+                <li><a href="ueber-mich.html">Über mich</a></li>
+                <li><a href="kontakt.html">Kontakt</a></li>
+                <li><a href="gaestebuch.html" class="active">Gästebuch</a></li>
+                <li><a href="datenschutz.html">Datenschutz</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="page-container">
+        
+        <div class="glass-panel" style="max-width: 800px; margin: 0 auto;">
+            <h1 class="page-title">Gästebuch</h1>
+            <p class="page-subtitle">Hinterlasse gerne einen Gruß oder deine Gedanken zu meinen Werken.</p>
+            
+            <!-- Das Eingabe-Formular -->
+            <form id="gb-form" class="glass-form" style="margin-top: 2rem;">
+                <div class="form-group">
+                    <label for="gb-name">Dein Name</label>
+                    <input type="text" id="gb-name" required placeholder="Wie darf ich dich nennen?" maxlength="50">
+                </div>
+                
+                <div class="form-group">
+                    <label for="gb-message">Deine Nachricht</label>
+                    <textarea id="gb-message" rows="4" required placeholder="Schreibe hier deinen Eintrag..." maxlength="500"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-large submit-btn" id="gb-submit-btn" disabled>Eintrag speichern...</button>
+            </form>
+
+            <!-- Hier landen die Einträge aus der Datenbank -->
+            <div class="guestbook-entries" id="entries-container">
+                <p class="loading-text">Verbinde mit Datenbank...</p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="site-footer simple-footer">
+        <p>&copy; 2026 Sebastian Kaspers. Alle Rechte vorbehalten. | <a href="impressum.html" style="color: var(--text-muted); text-decoration: none;">Impressum</a> | <a href="datenschutz.html" style="color: var(--text-muted); text-decoration: none;">Datenschutz</a></p>
+    </footer>
+
+    <!-- Firebase SDK (Modular) einbinden -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // ==========================================
+        // FIREBASE KONFIGURATION
+        // ==========================================
+        // In dieser Canvas-Umgebung nutzen wir die globale Konfiguration. 
+        // Für deine Github Pages musst du hier später deine eigene Config einfügen.
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4ZOLvHWohYF5IPsF2AmqWf039xMYAVs8",
+            authDomain: "mama-portfolio.firebaseapp.com",
+            projectId: "mama-portfolio",
+            storageBucket: "mama-portfolio.firebasestorage.app",
+            messagingSenderId: "953487415351",
+            appId: "1:953487415351:web:83b1302f68960fa17987b2",
+            measurementId: "G-HCBW3KDF18"
+        };
+        let appId = 'art-by-petra-guestbook';
+        
+        try {
+            if (typeof __firebase_config !== 'undefined') {
+                firebaseConfig = JSON.parse(__firebase_config);
+            }
+            if (typeof __app_id !== 'undefined') {
+                appId = __app_id;
+            }
+        } catch(e) { console.warn("Lade eigene Config..."); }
+
+        // Initialisierung
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        const submitBtn = document.getElementById('gb-submit-btn');
+        const entriesContainer = document.getElementById('entries-container');
+        const gbForm = document.getElementById('gb-form');
+
+        // ==========================================
+        // 1. ANONYMER LOGIN (Zwingend für Sicherheit)
+        // ==========================================
+        async function initAuth() {
+            try {
+                // Einloggen (unsichtbar im Hintergrund)
+                await signInAnonymously(auth);
+                
+                // Status überwachen
+                onAuthStateChanged(auth, (user) => {
+                    currentUser = user;
+                    if (user) {
+                        submitBtn.innerText = "Eintrag veröffentlichen";
+                        submitBtn.disabled = false;
+                        loadEntries(); // Sobald wir drin sind, laden wir die Einträge!
+                    }
+                });
+            } catch (error) {
+                console.error("Auth-Fehler:", error);
+                entriesContainer.innerHTML = '<p class="loading-text" style="color: red;">Fehler bei der Datenbankverbindung.</p>';
+            }
+        }
+
+        // ==========================================
+        // 2. EINTRÄGE AUS DER CLOUD LADEN
+        // ==========================================
+        function loadEntries() {
+            if (!currentUser) return;
+            
+            // Pfad zur Gästebuch-Datenbank (Strikt nach Vorgabe)
+            const entriesRef = collection(db, 'artifacts', appId, 'public', 'data', 'guestbook');
+            
+            // onSnapshot hört live auf Veränderungen! Wenn jemand was postet, erscheint es sofort bei allen.
+            onSnapshot(entriesRef, (snapshot) => {
+                const entries = [];
+                snapshot.forEach(doc => {
+                    entries.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // Wir sortieren im Browser (neueste zuerst)
+                entries.sort((a, b) => b.timestamp - a.timestamp);
+                
+                renderEntries(entries);
+            }, (error) => {
+                console.error("Fehler beim Laden:", error);
+            });
+        }
+
+        // HTML für die Einträge bauen
+        function renderEntries(entries) {
+            if (entries.length === 0) {
+                entriesContainer.innerHTML = '<p class="loading-text">Noch keine Einträge vorhanden. Sei der oder die Erste!</p>';
+                return;
+            }
+
+            entriesContainer.innerHTML = '';
+            
+            entries.forEach(entry => {
+                // Datum schön formatieren
+                const dateObj = new Date(entry.timestamp);
+                const dateString = dateObj.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:'2-digit' }) + ' Uhr';
+
+                // Sicheres Entschärfen von HTML-Eingaben (verhindert Skript-Angriffe)
+                const safeName = entry.name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                const safeMessage = entry.message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+                const card = document.createElement('div');
+                card.className = 'entry-card';
+                card.innerHTML = `
+                    <div class="entry-header">
+                        <span class="entry-name">${safeName}</span>
+                        <span class="entry-date">${dateString}</span>
+                    </div>
+                    <div class="entry-message">${safeMessage}</div>
+                `;
+                entriesContainer.appendChild(card);
+            });
+        }
+
+        // ==========================================
+        // 3. NEUEN EINTRAG SPEICHERN
+        // ==========================================
+        gbForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const nameInput = document.getElementById('gb-name');
+            const messageInput = document.getElementById('gb-message');
+            
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Wird gespeichert...";
+
+            try {
+                const entriesRef = collection(db, 'artifacts', appId, 'public', 'data', 'guestbook');
+                await addDoc(entriesRef, {
+                    name: nameInput.value.trim(),
+                    message: messageInput.value.trim(),
+                    timestamp: Date.now() // Aktuelle Zeit in Millisekunden
+                });
+                
+                // Formular leeren nach Erfolg
+                gbForm.reset();
+            } catch (error) {
+                console.error("Fehler beim Speichern:", error);
+                alert("Der Eintrag konnte leider nicht gespeichert werden.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Eintrag veröffentlichen";
+            }
+        });
+
+        // App starten
+        initAuth();
+    </script>
+</body>
+</html>

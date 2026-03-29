@@ -6,9 +6,9 @@
     <title>Kontakt @ Art by Petra Jansen</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="theme-4 fluid-background">
 
-    <header class="site-header">
+    <header class="site-header fixed-header">
         <div class="logo">
             <a href="index.html">Art by Petra Jansen</a>
         </div>
@@ -18,58 +18,73 @@
                 <li><a href="galerie.html">Galerie</a></li>
                 <li><a href="ueber-mich.html">Über mich</a></li>
                 <li><a href="kontakt.html" class="active">Kontakt</a></li>
+                <li><a href="gaestebuch.html">Gästebuch</a></li>
+                <li><a href="datenschutz.html">Datenschutz</a></li>
             </ul>
         </nav>
     </header>
 
-    <main class="contact-page">
-        <div class="contact-header">
-            <h1>Ich freue mich über Ihr Feedback!</h1>
-            <p>Für Feedback, Ausstellungsanfragen oder Atelierbesuche schreiben Sie mir gerne eine Nachricht.</p>
-        </div>
+    <main class="page-container">
         
-        <section class="contact-grid">
-            
-            <div class="contact-info">
-                <h3>Atelier & Kontakt</h3>
-                <p>
-                    <strong>Petra Jansen</strong><br>
-                    56268 Lutzerath<br>
-                    Deutschland
-                </p>
-                <div class="social-links">
-                    <a href="https://www.instagram.com/acrylpur/" target="_blank">Instagram</a>
+        <div class="glass-panel contact-panel">
+            <div class="contact-header">
+                <h1 class="page-title">Lass uns reden</h1>
+                <p class="page-subtitle">Haben Sie Interesse an einem Werk oder eine andere Frage? Schreiben Sie mir gerne.</p>
+            </div>
+
+            <div class="contact-grid">
+                
+                <div class="contact-info">
+
+                    <div class="info-block social-block">
+                        <h3>Social Media</h3>
+                        <a href="https://www.instagram.com/acrylpur/" class="social-link">Instagram</a>
+                        <a href="https://www.facebook.com/pjansen4" class="social-link">Facebook</a>
+                    </div>
                 </div>
-            </div>
 
-            <div class="contact-form-container">
-                <form action="https://formspree.io/f/mqegpzyl" method="POST" class="contact-form">
+                <div class="contact-form-wrapper">
                     
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" id="name" name="name" required placeholder="Ihr vollständiger Name">
-                    </div>
+                    <!-- 
+                         Das Formular läuft nun über Formspree. 
+                         Ersetze "DEINE_FORMSPREE_ID" mit dem Code, den du nach der Anmeldung erhältst. 
+                    -->
+                    <form action="https://formspree.io/f/mreopadp" method="POST" class="glass-form">
+                        
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required placeholder="Ihr Name" maxlength="100">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">E-Mail Adresse</label>
+                            <!-- Das name-Attribut "email" bzw. "_replyto" sorgt dafür, dass Formspree weiß, wem du antworten kannst -->
+                            <input type="email" id="email" name="_replyto" required placeholder="ihre@email.de" maxlength="150">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Nachricht</label>
+                            <textarea id="message" name="message" rows="5" required placeholder="Wie kann ich helfen?" maxlength="2000"></textarea>
+                        </div>
+                        
+                        <!-- Verhindert Spam-Bots (Honeypot) -->
+                        <input type="text" name="_gotcha" style="display:none" />
 
-                    <div class="form-group">
-                        <label for="email">E-Mail</label>
-                        <input type="email" id="email" name="email" required placeholder="ihre.adresse@beispiel.de">
-                    </div>
 
-                    <div class="form-group">
-                        <label for="message">Ihre Nachricht</label>
-                        <textarea id="message" name="message" rows="6" required placeholder="Wie kann ich Ihnen helfen?"></textarea>
-                    </div>
+                        <button type="submit" class="btn btn-large submit-btn">Nachricht senden</button>
+                    </form>
 
-                    <button type="submit" class="btn">Nachricht senden</button>
-                </form>
+                </div>
+
             </div>
+        </div>
 
-        </section>
     </main>
 
-    <footer class="site-footer">
+    <footer class="site-footer simple-footer">
         <p>&copy; 2026 Sebastian Kaspers. Alle Rechte vorbehalten.</p>
     </footer>
 
+    <script src="js/main.js"></script>
 </body>
 </html>

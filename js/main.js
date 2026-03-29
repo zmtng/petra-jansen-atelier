@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     
     // ==========================================
-    // 1. SCROLL-PRÄSENTATIONS-LOGIK (NEU)
+    // SCROLL-PRÄSENTATIONS-LOGIK
     // ==========================================
     const slides = document.querySelectorAll('.presentation-slide');
     
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         slides[0].classList.add('is-visible');
     }
 
-    // --- NEU: STRIKTE 1-SLIDE-PRO-SCROLL LOGIK ---
+    // --- STRIKTE 1-SLIDE-PRO-SCROLL LOGIK ---
         const container = document.querySelector('.scroll-snap-container');
         if (container && slides.length > 0) {
             let currentSlideIndex = 0;
@@ -59,8 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 slides[index].scrollIntoView({ behavior: 'smooth' });
                 
-                // Cooldown: Verhindert Mehrfach-Sprünge (1000ms passend zur Scrollzeit)
-                setTimeout(() => { isAnimating = false; }, 1000);
+                // Cooldown: Verhindert Mehrfach-Sprünge 
+                setTimeout(() => { isAnimating = false; }, 500);
             };
 
             // Mausrad-Scrollen abfangen
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 2. LIGHTBOX LOGIK (BLEIBT ERHALTEN)
+    // LIGHTBOX LOGIK
     // ==========================================
     const galleryItems = document.querySelectorAll('.insta-item, .artwork-card, .gallery-showcase-item');
     const lightbox = document.getElementById('lightbox');
@@ -121,8 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const fullImageUrl = item.getAttribute('data-full');
                 let titleText = '';
                 
-                if (item.classList.contains('insta-item')) {
-                // Logik für alte Galerie-Seite (Falls noch irgendwo verwendet)
+            if (item.classList.contains('insta-item')) {
                 titleText = item.querySelector('.artwork-title').innerText;
             } else if (item.classList.contains('artwork-card')) {
                 // Logik für Startseite
@@ -133,12 +132,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Lightbox befüllen und öffnen
-        const closeLightbox = () => {
-            lightbox.classList.remove('active');
-            setTimeout(() => { lightboxImg.src = ''; }, 300);
-        };
+            if (lightboxImg && lightboxCaption) {
+                lightboxImg.src = fullImageUrl;
+                lightboxCaption.innerText = titleText;
+            }
+            lightbox.classList.add('active');
+        });
+    });
 
-        closeBtn.addEventListener('click', closeLightbox);
+    const closeLightbox = () => {
+        lightbox.classList.remove('active');
+        setTimeout(() => { lightboxImg.src = ''; }, 300);
+    };
+
+    closeBtn.addEventListener('click', closeLightbox);
         
         lightbox.addEventListener('click', (e) => {
             if (e.target === lightbox) closeLightbox();
@@ -150,4 +157,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-)})}})
+});

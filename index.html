@@ -19,6 +19,8 @@
                 <li><a href="galerie.html">Galerie</a></li>
                 <li><a href="ueber-mich.html">Über mich</a></li>
                 <li><a href="kontakt.html">Kontakt</a></li>
+                <li><a href="gaestebuch.html">Gästebuch</a></li>
+                <li><a href="datenschutz.html">Datenschutz</a></li>
             </ul>
         </nav>
     </header>
@@ -29,8 +31,7 @@
             <div class="slide-content">
                 <h1 class="massive-title">Art by Petra Jansen</h1>
                 <p class="subtitle">Kunst, die bewegt.</p>
-                <!-- Kleiner animierter Pfeil, der zum Scrollen animiert -->
-                <div class="scroll-indicator">↓</div>
+                <div class="scroll-indicator" style="position: relative; bottom: auto; margin-top: 4rem;">↓</div>
             </div>
         </section>
 
@@ -48,19 +49,23 @@
             <div class="slide-content">
                 <h2>Die Künstlerin dahinter</h2>
                 <p>Jedes Bild erzählt eine Geschichte. Erfahre mehr über meine Inspiration und Technik.</p>
-                <a href="ueber-mich.html" class="btn btn-outline btn-large">Lernen Sie mich kennen</a>
+                <a href="ueber-mich.html" class="btn btn-large">Lernen Sie mich kennen</a>
             </div>
         </section>
 
         <!-- Folie 4: Kontakt & Footer -->
         <section class="slide presentation-slide" data-theme="theme-4">
             <div class="slide-content">
-                <h2>Lass uns sprechen</h2>
+                <h2>Lass uns reden</h2>
                 <p>Interesse an einem Bild oder einer Zusammenarbeit? Schreib mir gerne.</p>
                 <a href="kontakt.html" class="btn btn-large">Zum Kontakt</a>
             </div>
-            <!-- Footer in den letzten Slide integriert, damit er gut aussieht -->
+
             <footer class="slide-footer">
+                <div class="visitor-counter">
+                    <span class="counter-label">Besucher:</span>
+                    <span class="counter-number" id="v-count">lädt...</span>
+                </div>
                 <p>&copy; 2026 Sebastian Kaspers. Alle Rechte vorbehalten.</p>
             </footer>
         </section>
@@ -75,6 +80,66 @@
     </div>
 
     <script src="js/main.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // ==========================================
+        // FÜGE HIER DEINE FIREBASE CONFIG EIN
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4ZOLvHWohYF5IPsF2AmqWf039xMYAVs8",
+            authDomain: "mama-portfolio.firebaseapp.com",
+            projectId: "mama-portfolio",
+            storageBucket: "mama-portfolio.firebasestorage.app",
+            messagingSenderId: "953487415351",
+            appId: "1:953487415351:web:83b1302f68960fa17987b2",
+            measurementId: "G-HCBW3KDF18"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const counterElement = document.getElementById('v-count');
+        const statsDocRef = doc(db, 'stats', 'visitors'); // Speichert den Zähler unter stats -> visitors
+
+        async function initCounter() {
+            try {
+                await signInAnonymously(auth);
+                
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        // 1. Prüfen, ob der User heute schon gezählt wurde (damit F5-Drücken nicht pusht)
+                        const hasVisited = localStorage.getItem('pj_counted');
+                        
+                        if (!hasVisited) {
+                            // Erhöht den Wert in der Datenbank um +1 (oder erstellt ihn, falls er noch nicht existiert)
+                            await setDoc(statsDocRef, { count: increment(1) }, { merge: true });
+                            localStorage.setItem('pj_counted', 'true');
+                        }
+
+                        // 2. Live-Anzeige des aktuellen Wertes
+                        onSnapshot(statsDocRef, (docSnap) => {
+                            if (docSnap.exists()) {
+                                const currentCount = docSnap.data().count;
+                                // Ein kleiner Trick: Wir addieren eine Basiszahl (z.B. 1420), damit wir nicht bei 0 anfangen!
+                                const displayCount = 1 + currentCount;
+                                counterElement.innerText = displayCount.toLocaleString('de-DE');
+                            }
+                        });
+                    }
+                });
+            } catch (error) {
+                console.error("Zähler-Fehler:", error);
+                counterElement.innerText = "1.425"; // Fallback, falls Firebase blockiert wird
+            }
+        }
+
+        initCounter();
+    </script>
 
 </body>
 </html>
