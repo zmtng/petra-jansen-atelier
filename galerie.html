@@ -128,49 +128,34 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const mainContainer = document.getElementById('gallery-main');
+        const dynamicContainer = document.getElementById('dynamic-gallery-content');
         const loadingSlide = document.getElementById('inline-loading-slide');
-
-        // Funktion zum Initialisieren der Observer für neue Slides
-        function observeAddedSlides(slidesElements) {
-            if (typeof window.initAppLogic === 'function') {
-                const dynamicObserver = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            const theme = entry.target.getAttribute('data-theme');
-                            if (theme) document.body.className = `scroll-snap-container ${theme}`;
-                            entry.target.classList.add('is-visible');
-                        }
-                    });
-                }, { threshold: 0.3 });
-
-                slidesElements.forEach(slide => dynamicObserver.observe(slide));
-            }
-        }
 
         async function loadGallery() {
             try {
+                // Login im Hintergrund
                 await signInAnonymously(auth);
                 
+                // DB Abfrage
                 const q = query(collection(db, 'gallery'), orderBy('timestamp', 'desc'));
                 const querySnapshot = await getDocs(q);
                 
                 const images = [];
-                querySnapshot.forEach((doc) => {
-                    images.push(doc.data());
-                });
+                querySnapshot.forEach((doc) => images.push(doc.data()));
 
+                // 1. Lade-Slide entfernen
                 if (loadingSlide) loadingSlide.remove();
 
-                const addedElements = [];
+                // 2. Bilder generieren
                 let themeIndex = 1;
+                let htmlBuffer = "";
                 
                 images.forEach(img => {
                     const currentTheme = `theme-${themeIndex}`;
                     const displayTitle = img.title ? img.title : '';
                     const displaySubtitle = img.subtitle ? img.subtitle : '';
                     
-                    let slideHtml = `
+                    htmlBuffer += `
                         <section class="slide presentation-slide" data-theme="${currentTheme}">
                             <div class="slide-content" style="max-width: 1000px; width: 100%;">
                                 <div class="gallery-showcase-item" data-full="${img.url}" style="cursor: pointer;">
@@ -182,18 +167,21 @@
                                 </div>
                             </div>
                         </section>`;
-                    
-                    mainContainer.insertAdjacentHTML('beforeend', slideHtml);
-                    addedElements.push(mainContainer.lastElementChild);
                     themeIndex = themeIndex === 4 ? 1 : themeIndex + 1;
                 });
 
+                // 3. Footer anhängen
                 const footerHtml = document.getElementById('footer-template').innerHTML;
-                mainContainer.insertAdjacentHTML('beforeend', footerHtml);
-                addedElements.push(mainContainer.lastElementChild);
+                htmlBuffer += footerHtml;
 
-                // NUR die neuen Elemente observieren, ohne die Scroll-Logik zu resetten
-                observeAddedSlides(addedElements);
+                // 4. In den Container einfügen (ohne Sprung!)
+                dynamicContainer.innerHTML = htmlBuffer;
+
+                // 5. WICHTIG: Die neuen Elemente dem Beobachter der main.js hinzufügen
+                // Wir rufen initAppLogic NICHT neu auf, sondern triggern nur die Observer-Erkennung
+                if (window.initAppLogic) {
+                    window.initAppLogic(); 
+                }
 
             } catch (error) {
                 console.error("Fehler beim Laden der Galerie:", error);
@@ -203,6 +191,7 @@
             }
         }
 
+        // Start der Datenbank-Abfrage
         loadGallery();
     </script>
 </body>
