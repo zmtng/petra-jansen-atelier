@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galerie @ Art by Petra Jansen</title>
     <link rel="stylesheet" href="css/style.css">
+
+    <script>window.delayInit = true;</script>
 </head>
 
 <body class="theme-2 scroll-snap-container">
@@ -114,11 +116,13 @@
                     
                     let slideHtml = `
                         <section class="slide presentation-slide" data-theme="${currentTheme}">
-                            <div class="gallery-showcase-item" data-full="${img.url}">
-                                <img loading="lazy" class="gallery-showcase-img" src="${img.url}" alt="${displayTitle}">
-                                <div class="gallery-details">
-                                    <h2 class="gallery-title">${displayTitle}</h2>
-                                    <p>${displaySubtitle}</p>
+                            <div class="slide-content" style="max-width: 1000px; width: 100%;">
+                                <div class="gallery-showcase-item" data-full="${img.url}" style="max-width: 100%; opacity: 1; transform: none; cursor: pointer;">
+                                    <img loading="lazy" class="gallery-showcase-img" src="${img.url}" alt="${displayTitle}" style="max-height: 65vh; width: auto; max-width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border-radius: 6px;">
+                                    <div class="gallery-details" style="display: inline-block; margin-top: 15px;">
+                                        <h2 class="gallery-title">${displayTitle}</h2>
+                                        <p>${displaySubtitle}</p>
+                                    </div>
                                 </div>
                             </div>
                         </section>`;
