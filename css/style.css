@@ -2,9 +2,8 @@
    1. GRUNDEINSTELLUNGEN & VARIABLEN
    ========================================= */
 :root {
-    --bg-color: #fafafa;       
     --text-main: #1a1a1a;        
-    --text-muted: #666666;        
+    --text-muted: #4a4a4a;        
     --white: #ffffff;
     --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -15,20 +14,40 @@
     box-sizing: border-box;
 }
 
+/* Fließender Hintergrund
+*/
 body {
     font-family: var(--font-main);
     color: var(--text-main);
-    background-color: var(--bg-color);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased; 
+    
+    background: linear-gradient(135deg, 
+        #fdfbfb, #ebedee, /* Theme 1: Hell / Neutral */
+        #ffecd2, #fcb69f, /* Theme 2: Warm / Pfirsich */
+        #cfd9df, #e2ebf0, /* Theme 3: Kühl / Blau-Grau */
+        #e0c3fc, #8ec5fc  /* Theme 4: Kreativ / Lila-Blau */
+    );
+    background-size: 400% 400%;
+    transition: background-position 1.2s cubic-bezier(0.25, 0.1, 0.25, 1); /* Sehr weicher Übergang */
+}
+
+/* Die Positionen des riesigen Farbverlaufs */
+body.theme-1 { background-position: 0% 50%; }
+body.theme-2 { background-position: 33% 50%; }
+body.theme-3 { background-position: 66% 50%; }
+body.theme-4 { background-position: 100% 50%; }
+
+/* Scroll-Snapping */
+.scroll-snap-container {
+    height: 100vh;
+    overflow: hidden;
 }
 
 /* =========================================
    2. TYPOGRAFIE & BUTTONS
    ========================================= */
-h1, h2, h3 {
-    font-weight: 300; 
-}
+h1, h2, h3 { font-weight: 300; }
 
 .btn {
     display: inline-block;
@@ -39,11 +58,20 @@ h1, h2, h3 {
     text-transform: uppercase;
     font-size: 0.85rem;
     letter-spacing: 2px;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    border-radius: 30px; 
 }
 
 .btn:hover {
     background-color: var(--text-muted);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.btn-large {
+    padding: 16px 36px;
+    font-size: 1rem;
+    margin-top: 1.5rem;
 }
 
 .btn-outline {
@@ -58,15 +86,27 @@ h1, h2, h3 {
 }
 
 /* =========================================
-   3. KOPFZEILE & NAVIGATION
+   3. KOPFZEILE & NAVIGATION (Immer oben!)
    ========================================= */
+.fixed-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    /* Ein moderner Glas-Effekt (Frosted Glass), damit der Farbverlauf durchscheint */
+    background-color: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
 .site-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 2rem 5%;
-    background-color: var(--white);
-    border-bottom: 1px solid #eaeaea;
+    padding: 1.5rem 5%;
+    transition: padding 0.3s ease;
 }
 
 .logo a {
@@ -101,24 +141,99 @@ h1, h2, h3 {
 }
 
 /* =========================================
-   4. HERO-BEREICH (Der erste Eindruck)
+   4. PRÄSENTATIONS-SLIDES (Die Powerpoint)
    ========================================= */
-.hero {
+.presentation-slide {
+    height: 100vh; 
+    width: 100%;
+    scroll-snap-align: start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    padding: 8rem 20px;
-    background-color: var(--white);
+    position: relative;
+    padding: 0 20px;
 }
 
-.hero h1 {
-    font-size: 3.5rem;
+.slide-content {
+    max-width: 800px;
+    /* Leichtes Einblenden von unten für Text (wird durch JS getriggert) */
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+/* Klasse wird vom JS hinzugefügt, wenn der Slide im Bild ist */
+.presentation-slide.is-visible .slide-content {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.massive-title {
+    font-size: 4.5rem;
+    font-weight: 200;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.presentation-slide h2 {
+    font-size: 3rem;
     margin-bottom: 1.5rem;
 }
 
-.hero p {
-    max-width: 600px;
-    margin: 0 auto 2.5rem auto;
+.presentation-slide p {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+/* Der hüpfende Pfeil auf Slide 1 */
+.scroll-indicator {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    animation: bounce 2s infinite;
+    opacity: 0.5;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+    40% { transform: translateY(-20px) translateX(-50%); }
+    60% { transform: translateY(-10px) translateX(-50%); }
+}
+
+/* Integrierter Footer auf dem letzten Slide */
+.slide-footer {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 0.8rem;
     color: var(--text-muted);
-    font-size: 1.1rem;
+    opacity: 0.7;
+}
+
+
+/* =========================================
+   5. MOBILE ANPASSUNG (Responsive Design)
+   ========================================= */
+@media (max-width: 768px) {
+    .site-header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem 5%;
+    }
+    
+    .massive-title { font-size: 2.5rem; }
+    .presentation-slide h2 { font-size: 2rem; }
+    .presentation-slide p { font-size: 1rem; }
 }
 
 /* =========================================
@@ -582,5 +697,80 @@ h1, h2, h3 {
     
     .contact-form {
         padding: 1.5rem;
+    }
+}
+
+/* =========================================
+   14. GALERIE SHOWCASE (NEU FÜR SCROLL-GALERIE)
+   ========================================= */
+.gallery-slide-grid {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    width: 100%;
+    max-width: 1200px;
+    flex-wrap: wrap; /* Falls es auf Mobile zu eng wird */
+}
+
+.gallery-showcase-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    flex: 1 1 30%; /* Nimmt ca. 30% Platz ein für bis zu 3 Bilder nebeneinander */
+    max-width: 350px;
+    
+    /* Leichter Zoom-Effekt beim Einscrollen */
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+/* Wird durch unser JavaScript getriggert, wenn die Folie sichtbar ist */
+.presentation-slide.is-visible .gallery-showcase-item {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.gallery-showcase-img {
+    max-height: 45vh; /* Etwas kleiner, damit mehrere entspannt nebeneinander passen */
+    width: 100%;
+    object-fit: contain; /* Nichts wird abgeschnitten */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border-radius: 6px; 
+    cursor: pointer;
+    transition: transform 0.4s ease;
+}
+
+.gallery-showcase-img:hover {
+    transform: scale(1.03); /* Leichter Hover-Effekt, um Klickbarkeit zu zeigen */
+}
+
+.gallery-details {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.4);
+    padding: 8px 20px;
+    border-radius: 30px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.gallery-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.1rem;
+    font-weight: 400;
+}
+
+/* Mobile Anpassung für das Grid */
+@media (max-width: 768px) {
+    .gallery-slide-grid {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .gallery-showcase-img {
+        max-height: 25vh; /* Auf Handys noch kleiner, damit 2 übereinander passen */
     }
 }
