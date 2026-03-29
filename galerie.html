@@ -105,6 +105,7 @@
                 // Ladehinweis entfernen
                 document.getElementById('loading-indicator').style.display = 'none';
 
+                // Jedes Bild bekommt nun eine eigene Slide!
                 let themeIndex = 3; 
                 images.forEach(img => {
                     const currentTheme = `theme-${themeIndex}`;
@@ -137,7 +138,25 @@
 
             } catch (error) {
                 console.error("Fehler beim Laden der Galerie:", error);
-                document.getElementById('loading-indicator').innerHTML = 'Die Ausstellung konnte leider nicht geladen werden.';
+                const loadingIndicator = document.getElementById('loading-indicator');
+                
+                // Wenn der API-Schlüssel diese Vorschau blockiert, zeigen wir eine hilfreiche Info an!
+                if (error.message.includes('auth/requests-from-referer')) {
+                    loadingIndicator.innerHTML = `
+                        <div style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 2px solid #e74c3c; padding: 25px; border-radius: 12px; max-width: 600px; margin: 0 auto; text-align: left;">
+                            <h3 style="color: #c0392b; margin-bottom: 15px; text-align: center;">Vorschau blockiert (Sicherheitssperre)</h3>
+                            <p style="color: var(--text-main); font-size: 1rem; margin-bottom: 10px;">
+                                Deine Google Cloud Sicherheitseinstellungen funktionieren perfekt! Da du den Zugriff auf <strong>GitHub Pages</strong> beschränkt hast, darf diese Vorschau die Bilder nicht laden.
+                            </p>
+                            <p style="color: var(--text-main); font-size: 1rem;">
+                                <strong>Lösung A:</strong> Lade diese Datei auf Github hoch. Dort wird sie sofort fehlerfrei funktionieren.<br><br>
+                                <strong>Lösung B:</strong> Um die Bilder auch hier in der Vorschau zu testen, füge in der Google Cloud Console bei den API-Einschränkungen diese URL hinzu:<br>
+                                <code style="display: block; background: #fff; padding: 8px; border-radius: 4px; margin-top: 8px; font-weight: bold; border: 1px solid #ccc; text-align: center;">*.scf.usercontent.goog</code>
+                            </p>
+                        </div>`;
+                } else {
+                    loadingIndicator.innerHTML = 'Die Ausstellung konnte leider nicht geladen werden.';
+                }
             }
         }
 
