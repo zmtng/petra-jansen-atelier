@@ -1,5 +1,3 @@
-// Wir verpacken das gesamte Skript in eine aufrufbare Funktion.
-// So können wir es manuell neu starten, sobald Firebase die Bilder geladen hat!
 window.initAppLogic = () => {
     
     // ==========================================
@@ -12,8 +10,7 @@ window.initAppLogic = () => {
             if (entry.isIntersecting) {
                 const theme = entry.target.getAttribute('data-theme');
                 if (theme) document.body.className = `scroll-snap-container ${theme}`;
-                
-                // Hier passiert die Magie: Das Bild wird sichtbar gemacht
+
                 entry.target.classList.add('is-visible');
             }
         });
@@ -42,7 +39,7 @@ window.initAppLogic = () => {
             isAnimating = true;
             currentSlideIndex = index;
             slides[index].scrollIntoView({ behavior: 'smooth' });
-            setTimeout(() => { isAnimating = false; }, 1000);
+            setTimeout(() => { isAnimating = false; }, 500);
         };
 
         window.addEventListener('wheel', (e) => {

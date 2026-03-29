@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galerie @ Art by Petra Jansen</title>
     <link rel="stylesheet" href="css/style.css">
-
+    
+    <!-- Pausiert die strikte Scroll-Logik, bis Firebase fertig ist, lässt aber normales Scrollen zu -->
     <script>window.delayInit = true;</script>
 </head>
 
@@ -21,7 +22,7 @@
                 <li><a href="galerie.html" class="active">Galerie</a></li>
                 <li><a href="ueber-mich.html">Über mich</a></li>
                 <li><a href="kontakt.html">Kontakt</a></li>
-                <li><a href="gaestebuch.html">Gästebuch</a></li>
+                <li><a href="gaestebuch.html" >Gästebuch</a></li>
                 <li><a href="datenschutz.html">Datenschutz</a></li>
             </ul>
         </nav>
@@ -29,7 +30,8 @@
 
     <main id="gallery-main">
         
-        <section class="slide presentation-slide" data-theme="theme-2">
+        <!-- Folie 1: Intro (Neu: 'is-visible' Klasse ist fest vergeben, damit der Text sofort da ist!) -->
+        <section class="slide presentation-slide is-visible" data-theme="theme-2">
             <div class="slide-content" style="padding-bottom: 40px;">
                 <h1 class="massive-title">Gesamtwerk</h1>
                 <p class="subtitle">Scrolle, um die Ausstellung zu durchqueren. Jedes Werk lässt sich per Klick vergrößern.</p>
@@ -45,16 +47,26 @@
             </div>
         </section>
 
-        <div id="loading-indicator" style="text-align: center; margin-top: 10vh; font-size: 1.2rem; color: var(--text-muted);">
-            Lade Kunstwerke aus der Datenbank...
-        </div>
+        <!-- Folie 2: Asynchroner Lade-Screen (Dient als Platzhalter, bis Firebase fertig ist) -->
+        <section class="slide presentation-slide is-visible" id="loading-slide" data-theme="theme-3">
+            <div class="slide-content" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100%;">
+                <div style="display: inline-block; width: 50px; height: 50px; border: 3px solid rgba(0,0,0,0.1); border-top-color: var(--text-main); border-radius: 50%; animation: spin 1s infinite linear; margin-bottom: 2rem;"></div>
+                <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+                <h2 style="margin-bottom: 1rem;">Ausstellung wird vorbereitet</h2>
+                <p style="color: var(--text-muted);">Die Kunstwerke werden aus der Datenbank geladen...</p>
+            </div>
+        </section>
 
+        <!-- HIER WERDEN DIE BILDER DYNAMISCH EINGEFÜGT -->
+        
     </main>
 
+    <!-- Letzte Folie (Wird ebenfalls dynamisch ans Ende gehängt) -->
     <div id="footer-template" style="display: none;">
         <section class="slide presentation-slide" data-theme="theme-4">
             <div class="slide-content">
-                <p>Bei Fragen zu einzelnen Werken freue ich mich über eine Nachricht.</p>
+                <h2>Interesse an einem Werk?</h2>
+                <p>Lass uns gerne sprechen.</p>
                 <a href="kontakt.html" class="btn btn-large">Kontakt aufnehmen</a>
             </div>
             <footer class="slide-footer">
@@ -63,6 +75,7 @@
         </section>
     </div>
 
+    <!-- Lightbox für die große Ansicht -->
     <div id="lightbox" class="lightbox">
         <span class="lightbox-close">&times;</span>
         <img id="lightbox-img" src="" alt="Großansicht">
@@ -71,6 +84,7 @@
 
     <script src="js/main.js"></script>
 
+    <!-- Firebase SDK für die dynamische Galerie -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -104,8 +118,11 @@
                     images.push(doc.data());
                 });
 
-                // Ladehinweis entfernen
-                document.getElementById('loading-indicator').style.display = 'none';
+                // Den temporären Lade-Screen entfernen, da wir jetzt die echten Bilder haben
+                const loadingSlide = document.getElementById('loading-slide');
+                if (loadingSlide) {
+                    loadingSlide.remove();
+                }
 
                 // Jedes Bild bekommt nun eine eigene Slide!
                 let themeIndex = 3; 
@@ -128,44 +145,45 @@
                         </section>`;
                     
                     mainContainer.insertAdjacentHTML('beforeend', slideHtml);
-                    
-                    // Theme rotieren (1 bis 4)
                     themeIndex = themeIndex === 4 ? 1 : themeIndex + 1;
                 });
 
+                // Ganz am Ende den Footer anhängen
                 const footerSlide = document.getElementById('footer-template').innerHTML;
                 mainContainer.insertAdjacentHTML('beforeend', footerSlide);
 
+                
                 if(typeof window.initAppLogic === 'function') {
                     window.initAppLogic();
                 }
 
             } catch (error) {
                 console.error("Fehler beim Laden der Galerie:", error);
-                const loadingIndicator = document.getElementById('loading-indicator');
+                const loadingSlide = document.getElementById('loading-slide');
                 
-                // Wenn der API-Schlüssel diese Vorschau blockiert, zeigen wir eine hilfreiche Info an!
-                if (error.message.includes('auth/requests-from-referer')) {
-                    loadingIndicator.innerHTML = `
-                        <div style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 2px solid #e74c3c; padding: 25px; border-radius: 12px; max-width: 600px; margin: 0 auto; text-align: left;">
-                            <h3 style="color: #c0392b; margin-bottom: 15px; text-align: center;">Vorschau blockiert (Sicherheitssperre)</h3>
-                            <p style="color: var(--text-main); font-size: 1rem; margin-bottom: 10px;">
-                                Deine Google Cloud Sicherheitseinstellungen funktionieren perfekt! Da du den Zugriff auf <strong>GitHub Pages</strong> beschränkt hast, darf diese Vorschau die Bilder nicht laden.
-                            </p>
-                            <p style="color: var(--text-main); font-size: 1rem;">
-                                <strong>Lösung A:</strong> Lade diese Datei auf Github hoch. Dort wird sie sofort fehlerfrei funktionieren.<br><br>
-                                <strong>Lösung B:</strong> Um die Bilder auch hier in der Vorschau zu testen, füge in der Google Cloud Console bei den API-Einschränkungen diese URL hinzu:<br>
-                                <code style="display: block; background: #fff; padding: 8px; border-radius: 4px; margin-top: 8px; font-weight: bold; border: 1px solid #ccc; text-align: center;">*.scf.usercontent.goog</code>
-                            </p>
-                        </div>`;
-                } else {
-                    loadingIndicator.innerHTML = 'Die Ausstellung konnte leider nicht geladen werden.';
+                // Fehlerbehandlung: Den Ladekreis durch eine Fehlermeldung ersetzen
+                if (loadingSlide) {
+                    if (error.message.includes('auth/requests-from-referer')) {
+                        loadingSlide.innerHTML = `
+                            <div class="slide-content" style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 2px solid #e74c3c; padding: 25px; border-radius: 12px; max-width: 600px; margin: 0 auto; text-align: left;">
+                                <h3 style="color: #c0392b; margin-bottom: 15px; text-align: center;">Vorschau blockiert (Sicherheitssperre)</h3>
+                                <p style="color: var(--text-main); font-size: 1rem; margin-bottom: 10px;">
+                                    Deine Google Cloud Sicherheitseinstellungen funktionieren perfekt! Da du den Zugriff auf <strong>GitHub Pages</strong> beschränkt hast, darf diese Vorschau die Bilder nicht laden.
+                                </p>
+                                <p style="color: var(--text-main); font-size: 1rem;">
+                                    <strong>Lösung A:</strong> Lade diese Datei auf Github hoch. Dort wird sie sofort fehlerfrei funktionieren.<br><br>
+                                    <strong>Lösung B:</strong> Füge in der Google Cloud Console bei den API-Einschränkungen diese URL hinzu:<br>
+                                    <code style="display: block; background: #fff; padding: 8px; border-radius: 4px; margin-top: 8px; font-weight: bold; border: 1px solid #ccc; text-align: center;">*.scf.usercontent.goog</code>
+                                </p>
+                            </div>`;
+                    } else {
+                        loadingSlide.innerHTML = '<div class="slide-content"><h2>Fehler</h2><p>Die Ausstellung konnte leider nicht geladen werden.</p></div>';
+                    }
                 }
             }
         }
 
         loadGallery();
     </script>
-
 </body>
 </html>
