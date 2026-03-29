@@ -638,3 +638,56 @@ h1, h2, h3 { font-weight: 300; }
         margin-top: 20px;
     }
 }
+
+/* =========================================
+    STARTSEITE: KARTEN-LAYOUT (CTA GRID)
+   ========================================= */
+.slide-content-wide {
+    max-width: 1000px; /* Gibt den zwei Karten nebeneinander genug Platz */
+    width: 100%;
+}
+
+.cta-grid {
+    display: grid;
+    /* Macht automatisch 2 Spalten auf dem PC und 1 Spalte auf dem Handy */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    width: 100%;
+}
+
+.cta-card {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    
+    /* Inhalt der Karte zentrieren */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.cta-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.55);
+}
+
+.cta-card h2 {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+}
+
+.cta-card p {
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+    color: var(--text-muted);
+    flex-grow: 1; /* Schiebt den Button immer sauber ans untere Ende */
+}
