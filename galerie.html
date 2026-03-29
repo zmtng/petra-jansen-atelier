@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galerie @ Art by Petra Jansen</title>
     <link rel="stylesheet" href="css/style.css">
-    
-    <!-- Pausiert die strikte Scroll-Logik, bis Firebase fertig ist, lässt aber normales Scrollen zu -->
-    <script>window.delayInit = true;</script>
+    <!-- Wir blockieren das JavaScript NICHT mehr! Es startet sofort für die statischen Bilder. -->
 </head>
 
 <body class="theme-2 scroll-snap-container">
@@ -21,8 +19,8 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="galerie.html" class="active">Galerie</a></li>
                 <li><a href="ueber-mich.html">Über mich</a></li>
+                <li><a href="gaestebuch.html">Gästebuch</a></li>
                 <li><a href="kontakt.html">Kontakt</a></li>
-                <li><a href="gaestebuch.html" >Gästebuch</a></li>
                 <li><a href="datenschutz.html">Datenschutz</a></li>
             </ul>
         </nav>
@@ -30,8 +28,8 @@
 
     <main id="gallery-main">
         
-        <!-- Folie 1: Intro (Neu: 'is-visible' Klasse ist fest vergeben, damit der Text sofort da ist!) -->
-        <section class="slide presentation-slide is-visible" data-theme="theme-2">
+        <!-- Folie 1: Intro -->
+        <section class="slide presentation-slide" data-theme="theme-2">
             <div class="slide-content" style="padding-bottom: 40px;">
                 <h1 class="massive-title">Gesamtwerk</h1>
                 <p class="subtitle">Scrolle, um die Ausstellung zu durchqueren. Jedes Werk lässt sich per Klick vergrößern.</p>
@@ -47,37 +45,46 @@
             </div>
         </section>
 
+        <!-- ========================================== -->
+        <!-- STATISCHE HIGHLIGHT-BILDER (SOFORT SICHTBAR) -->
+        <!-- ========================================== -->
+
         <section class="slide presentation-slide" data-theme="theme-3">
             <div class="slide-content" style="max-width: 1000px; width: 100%;">
-                <div class="gallery-showcase-item" data-full="assets/bilder/platzhalter1.jpg" style="max-width: 100%; opacity: 1; transform: none; cursor: pointer;">
-                    <img loading="lazy" class="gallery-showcase-img" src="assets/bilder/Screenshot 2026-03-28 211320.png" alt="Highlight 1" style="max-height: 65vh; width: auto; max-width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border-radius: 6px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'400\' viewBox=\'0 0 600 400\'%3E%3Crect width=\'600\' height=\'400\' fill=\'%23e0e0e0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'sans-serif\' font-size=\'20\' fill=\'%23666\'%3EStatisches Highlight-Bild 1%3C/text%3E%3C/svg%3E'">
-                    <div class="gallery-details" style="display: inline-block; margin-top: 15px;">
-                    </div>
+                <div class="gallery-showcase-item" data-full="assets/bilder/Screenshot 2026-03-28 211320.png" style="cursor: pointer;">
+                    <img loading="lazy" class="gallery-showcase-img" src="assets/bilder/Screenshot 2026-03-28 211320.png" alt="Highlight 1" style="max-height: 65vh; width: auto; max-width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border-radius: 6px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'400\'%3E%3Crect width=\'600\' height=\'400\' fill=\'%23eee\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'20\'%3EBild wird geladen...%3C/text%3E%3C/svg%3E'">
                 </div>
             </div>
         </section>
 
-        <section class="slide presentation-slide" data-theme="theme-3">
+        <section class="slide presentation-slide" data-theme="theme-4">
             <div class="slide-content" style="max-width: 1000px; width: 100%;">
-                <div class="gallery-showcase-item" data-full="assets/bilder/platzhalter1.jpg" style="max-width: 100%; opacity: 1; transform: none; cursor: pointer;">
-                    <img loading="lazy" class="gallery-showcase-img" src="assets/bilder/Screenshot 2026-03-28 211738.png" alt="Highlight 1" style="max-height: 65vh; width: auto; max-width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border-radius: 6px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'400\' viewBox=\'0 0 600 400\'%3E%3Crect width=\'600\' height=\'400\' fill=\'%23e0e0e0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'sans-serif\' font-size=\'20\' fill=\'%23666\'%3EStatisches Highlight-Bild 1%3C/text%3E%3C/svg%3E'">
-                    <div class="gallery-details" style="display: inline-block; margin-top: 15px;">
-                    </div>
+                <div class="gallery-showcase-item" data-full="assets/bilder/Screenshot 2026-03-28 211402.png" style="cursor: pointer;">
+                    <img loading="lazy" class="gallery-showcase-img" src="assets/bilder/Screenshot 2026-03-28 211402.png" alt="Highlight 1" style="max-height: 65vh; width: auto; max-width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border-radius: 6px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'400\'%3E%3Crect width=\'600\' height=\'400\' fill=\'%23eee\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'20\'%3EBild wird geladen...%3C/text%3E%3C/svg%3E'">
                 </div>
             </div>
         </section>
 
-        <section class="slide presentation-slide" data-theme="theme-3">
+        <section class="slide presentation-slide" data-theme="theme-1">
             <div class="slide-content" style="max-width: 1000px; width: 100%;">
-                <div class="gallery-showcase-item" data-full="assets/bilder/platzhalter1.jpg" style="max-width: 100%; opacity: 1; transform: none; cursor: pointer;">
-                    <img loading="lazy" class="gallery-showcase-img" src="assets/bilder/Screenshot 2026-03-28 211520.png" alt="Highlight 1" style="max-height: 65vh; width: auto; max-width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border-radius: 6px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'400\' viewBox=\'0 0 600 400\'%3E%3Crect width=\'600\' height=\'400\' fill=\'%23e0e0e0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'sans-serif\' font-size=\'20\' fill=\'%23666\'%3EStatisches Highlight-Bild 1%3C/text%3E%3C/svg%3E'">
-                    <div class="gallery-details" style="display: inline-block; margin-top: 15px;">
-                    </div>
+                <div class="gallery-showcase-item" data-full="assets/bilder/Screenshot 2026-03-28 211433.png" style="cursor: pointer;">
+                    <img loading="lazy" class="gallery-showcase-img" src="assets/bilder/Screenshot 2026-03-28 211433.png" alt="Highlight 1" style="max-height: 65vh; width: auto; max-width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border-radius: 6px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'400\'%3E%3Crect width=\'600\' height=\'400\' fill=\'%23eee\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'20\'%3EBild wird geladen...%3C/text%3E%3C/svg%3E'">
                 </div>
             </div>
         </section>
 
-        <!-- HIER WERDEN DIE BILDER DYNAMISCH EINGEFÜGT -->
+        <!-- ========================================== -->
+        <!-- LADEHINWEIS FÜR DIE DATENBANK-BILDER       -->
+        <!-- ========================================== -->
+        <section class="slide presentation-slide" id="inline-loading-slide" data-theme="theme-2">
+            <div class="slide-content" style="text-align: center; color: var(--text-muted);">
+                <div style="display: inline-block; width: 30px; height: 30px; border: 2px solid rgba(0,0,0,0.1); border-top-color: var(--text-main); border-radius: 50%; animation: spin 1s infinite linear; margin-bottom: 1rem;"></div>
+                <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+                <p>Lade weitere Bilder aus dem Archiv...</p>
+            </div>
+        </section>
+
+        <!-- HIER WERDEN DIE DATENBANK-BILDER EINGEFÜGT -->
         
     </main>
 
@@ -86,7 +93,6 @@
         <section class="slide presentation-slide" data-theme="theme-4">
             <div class="slide-content">
                 <h2>Interesse an einem Werk?</h2>
-                <p>Lass uns gerne sprechen.</p>
                 <a href="kontakt.html" class="btn btn-large">Kontakt aufnehmen</a>
             </div>
             <footer class="slide-footer">
@@ -104,13 +110,12 @@
 
     <script src="js/main.js"></script>
 
-    <!-- Firebase SDK für die dynamische Galerie -->
+    <!-- Firebase SDK für die dynamischen Bilder -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Deine Firebase Einstellungen
         const firebaseConfig = {
             apiKey: "AIzaSyA4ZOLvHWohYF5IPsF2AmqWf039xMYAVs8",
             authDomain: "mama-portfolio.firebaseapp.com",
@@ -124,12 +129,27 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const mainContainer = document.getElementById('gallery-main');
+        const loadingSlide = document.getElementById('inline-loading-slide');
+
+        // Funktion zum Initialisieren der Observer für neue Slides
+        function observeNewSlides(slidesElements) {
+            const dynamicObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const theme = entry.target.getAttribute('data-theme');
+                        if (theme) document.body.className = `scroll-snap-container ${theme}`;
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { threshold: 0.3 });
+
+            slidesElements.forEach(slide => dynamicObserver.observe(slide));
+        }
 
         async function loadGallery() {
             try {
                 await signInAnonymously(auth);
                 
-                // Bilder abrufen
                 const q = query(collection(db, 'gallery'), orderBy('timestamp', 'desc'));
                 const querySnapshot = await getDocs(q);
                 
@@ -138,14 +158,12 @@
                     images.push(doc.data());
                 });
 
-                // Den temporären Lade-Screen entfernen, da wir jetzt die echten Bilder haben
-                const loadingSlide = document.getElementById('loading-slide');
-                if (loadingSlide) {
-                    loadingSlide.remove();
-                }
+                // Den Ladekreis-Slide entfernen
+                if (loadingSlide) loadingSlide.remove();
 
-                // Jedes Bild bekommt nun eine eigene Slide!
-                let themeIndex = 3; 
+                const newSlides = [];
+                let themeIndex = 1;
+                
                 images.forEach(img => {
                     const currentTheme = `theme-${themeIndex}`;
                     const displayTitle = img.title ? img.title : '';
@@ -154,7 +172,7 @@
                     let slideHtml = `
                         <section class="slide presentation-slide" data-theme="${currentTheme}">
                             <div class="slide-content" style="max-width: 1000px; width: 100%;">
-                                <div class="gallery-showcase-item" data-full="${img.url}" style="max-width: 100%; opacity: 1; transform: none; cursor: pointer;">
+                                <div class="gallery-showcase-item" data-full="${img.url}" style="cursor: pointer;">
                                     <img loading="lazy" class="gallery-showcase-img" src="${img.url}" alt="${displayTitle}" style="max-height: 65vh; width: auto; max-width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border-radius: 6px;">
                                     <div class="gallery-details" style="display: inline-block; margin-top: 15px;">
                                         <h2 class="gallery-title">${displayTitle}</h2>
@@ -165,21 +183,26 @@
                         </section>`;
                     
                     mainContainer.insertAdjacentHTML('beforeend', slideHtml);
+                    newSlides.push(mainContainer.lastElementChild);
                     themeIndex = themeIndex === 4 ? 1 : themeIndex + 1;
                 });
 
-                // Ganz am Ende den Footer anhängen
-                const footerSlide = document.getElementById('footer-template').innerHTML;
-                mainContainer.insertAdjacentHTML('beforeend', footerSlide);
+                // Footer anhängen
+                const footerHtml = document.getElementById('footer-template').innerHTML;
+                mainContainer.insertAdjacentHTML('beforeend', footerHtml);
+                newSlides.push(mainContainer.lastElementChild);
 
-                
+                // Re-Initialisiere die App-Logik für neue Elemente
                 if(typeof window.initAppLogic === 'function') {
                     window.initAppLogic();
                 }
+                observeNewSlides(newSlides);
 
             } catch (error) {
                 console.error("Fehler beim Laden der Galerie:", error);
-                const loadingSlide = document.getElementById('loading-slide');
+                if (loadingSlide) {
+                    loadingSlide.innerHTML = '<div class="slide-content"><p style="color: red;">Archiv-Bilder konnten nicht geladen werden.</p></div>';
+                }
             }
         }
 
