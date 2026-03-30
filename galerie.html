@@ -3,8 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Offizielles Portfolio der Künstlerin Petra Jansen aus Lutzerath. Entdecke meine neuesten Kunstwerke, Malereien und Galerie-Projekte.">
     <title>Galerie @ Art by Petra Jansen</title>
     <link rel="stylesheet" href="css/style.css">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://petra-jansen.art/">
+    <meta property="og:title" content="Petra Jansen | Kunst & Galerie in Lutzerath">
+    <meta property="og:description" content="Offizielles Portfolio der Künstlerin Petra Jansen aus Lutzerath. Entdecke meine neuesten Kunstwerke und Projekte.">
+    <meta property="og:image" content="https://petra-jansen.art/Vorschaubild.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://petra-jansen.art/">
+    <meta name="twitter:title" content="Petra Jansen | Kunst & Galerie in Lutzerath">
+    <meta name="twitter:description" content="Offizielles Portfolio der Künstlerin Petra Jansen aus Lutzerath. Entdecke meine neuesten Kunstwerke und Projekte.">
+    <meta name="twitter:image" content="https://petra-jansen.art/Vorschaubild.png">
 </head>
 
 <body class="theme-2 fluid-background">
@@ -102,7 +114,7 @@
                         const item = document.createElement('div');
                         item.className = 'grid-item';
                         item.innerHTML = `
-                            <img src="${data.url}" class="grid-img" alt="${data.title}" loading="lazy" data-full="${data.url}">
+                            <img src="${data.url}" class="grid-img" alt="Gemälde von Petra Jansen aus Lutzerath - ${data.title}" loading="lazy" data-full="${data.url}">
                             <div class="grid-info">
                                 <h3>${data.title || ''}</h3>
                                 <p>${data.subtitle || ''}</p>
