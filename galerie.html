@@ -5,6 +5,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galerie @ Art by Petra Jansen</title>
     <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        /* ============================================================
+           CSS OVERRIDES: Slider-Logik deaktivieren & Grid aktivieren
+           ============================================================ */
+        
+        /* 1. Freies Scrollen auf der gesamten Seite erlauben */
+        html, body, #wrapper, #dynamic-content {
+            height: auto !important;
+            overflow: auto !important; /* Scrollbars erzwingen */
+            overflow-x: hidden !important;
+        }
+
+        /* 2. Den Container als Grid definieren (2 Spalten) */
+        #dynamic-content {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Genau zwei pro Reihe */
+            gap: 30px; /* Abstand zwischen den Bildern */
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin: 0 auto; /* Zentrieren */
+            box-sizing: border-box;
+            align-items: start; /* Verhindert, dass ungleich hohe Bilder Reihen verzerren */
+        }
+
+        /* Mobil-Optimierung: Auf Handys nur 1 Spalte */
+        @media (max-width: 768px) {
+            #dynamic-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        /* 3. Styling für die neuen Galerie-Karten (Grid-Items) */
+        .gallery-grid-item {
+            position: relative;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gallery-grid-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        /* Bild-Container, damit alle Bilder im Grid ähnlich wirken */
+        .grid-image-wrapper {
+            width: 100%;
+            /* Wir erzwingen kein festes Seitenverhältnis, damit Kunstwerke */
+            /* nicht beschnitten werden. Wir begrenzen nur die Höhe. */
+            text-align: center;
+            background: #000; /* Hintergrund falls Bild nicht ausfüllt */
+        }
+
+        .grid-img {
+            max-width: 100%;
+            height: auto;
+            max-height: 70vh; /* Verhindert extrem lange Bilder */
+            display: block;
+            margin: 0 auto;
+            object-fit: contain; /* Zeigt das ganze Bild unbeschnitten */
+        }
+
+        /* Details unter dem Bild */
+        .grid-details {
+            padding: 20px;
+            text-align: center;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .grid-details h2 {
+            font-size: 1.4rem;
+            margin: 0;
+            color: #fff;
+            font-family: var(--font-fancy); /* Nutzt die Schrift aus style.css */
+        }
+
+        .grid-details p {
+            margin: 8px 0 0 0;
+            opacity: 0.7;
+            font-style: italic;
+            font-size: 0.95rem;
+            color: #ddd;
+        }
+
+        /* 4. Loader und Footer Anpassungen für das Grid */
+        #db-loader-slide {
+            grid-column: 1 / -1; /* Loader spannt über beide Spalten */
+            text-align: center;
+            padding: 100px 0;
+            /* Standardmäßig sichtbar, wird per JS ausgeblendet */
+            display: block; 
+        }
+
+        #loader-text {
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        /* Der Footer muss sich auch über beide Spalten erstrecken */
+        #dynamic-content > footer {
+            grid-column: 1 / -1;
+            margin-top: 50px;
+            width: 100%;
+        }
+
+    </style>
 </head>
 
 <body class="theme-2 scroll-snap-container">
@@ -25,38 +137,17 @@
         </nav>
     </header>
 
-    <main id="gallery-main">
-        
-        <!-- Folie 1: Intro (Sofort sichtbar) -->
-        <section class="slide presentation-slide" data-theme="theme-2">
-            <div class="slide-content" style="padding-bottom: 40px;">
-                <h1 class="massive-title">Gesamtwerk</h1>
-                <p class="subtitle">Scrolle, um die Ausstellung zu durchqueren. Jedes Werk lässt sich per Klick vergrößern.</p>
-                
-                <div style="margin-top: 2.5rem;">
-                    <p style="font-size: 1.05rem; margin-bottom: 1rem; color: var(--text-muted);">
-                        Bei Fragen zu einzelnen Werken freue ich mich über eine Nachricht.
-                    </p>
-                    <a href="kontakt.html" class="btn btn-outline">Kontakt aufnehmen</a>
+    <div id="wrapper">
+        <main id="dynamic-content">
+            
+            <div id="db-loader-slide">
+                <div class="slide-content">
+                    <p id="loader-text">Kunstwerke werden geladen...</p>
                 </div>
-
-                <div class="scroll-indicator" style="position: relative; bottom: auto; margin-top: 4rem;">↓</div>
             </div>
-        </section>
 
-        <!-- CONTAINER FÜR DYNAMISCHE ELEMENTE -->
-        <div id="dynamic-content"></div>
-
-        <!-- LADEHINWEIS (Wird am Ende der Liste angezeigt, solange noch geladen wird) -->
-        <section class="slide presentation-slide" id="db-loader-slide" data-theme="theme-2" style="display: none;">
-            <div class="slide-content" style="text-align: center; color: var(--text-muted);">
-                <div style="display: inline-block; width: 30px; height: 30px; border: 2px solid rgba(0,0,0,0.1); border-top-color: var(--text-main); border-radius: 50%; animation: spin 1s infinite linear; margin-bottom: 1rem;"></div>
-                <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
-                <p id="loader-text">Weitere Werke werden geladen...</p>
-            </div>
-        </section>
-
-    </main>
+            </main>
+    </div>
 
     <!-- Footer Template (Wird ganz am Ende eingefügt) -->
     <div id="footer-template" style="display: none;">
@@ -109,28 +200,24 @@
         const dynamicContainer = document.getElementById('dynamic-content');
         const loaderSlide = document.getElementById('db-loader-slide');
 
-        function appendSlide(imgData, index) {
-            const themeIndex = (index % 4) + 1;
-            const section = document.createElement('section');
-            section.className = 'slide presentation-slide';
-            section.setAttribute('data-theme', `theme-${themeIndex}`);
+        // Hilfsfunktion: Erstellt ein Grid-Item (keine Slide mehr)
+        function appendGalleryItem(imgData) {
+            const div = document.createElement('div');
+            div.className = 'gallery-grid-item';
             
-            section.innerHTML = `
-                <div class="slide-content" style="max-width: 1200px; width: 100%; padding: 20px;">
-                    <div class="gallery-showcase-item" style="text-align: center;">
-                        <img loading="lazy" 
-                            src="${imgData.url}" 
-                            alt="${imgData.title || ''}" 
-                            style="max-height: 80vh; width: auto; max-width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.2); border-radius: 4px;">
-                        
-                        <div style="margin-top: 25px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; display: inline-block;">
-                            <h2 style="margin: 0; font-size: 1.8rem;">${imgData.title || 'Ohne Titel'}</h2>
-                            <p style="margin: 5px 0 0 0; opacity: 0.8;">${imgData.subtitle || ''}</p>
-                        </div>
-                    </div>
+            div.innerHTML = `
+                <div class="grid-image-wrapper">
+                    <img loading="lazy" 
+                         class="grid-img"
+                         src="${imgData.url}" 
+                         alt="${imgData.title || 'Kunstwerk'}">
+                </div>
+                <div class="grid-details">
+                    <h2>${imgData.title || 'Ohne Titel'}</h2>
+                    <p>${imgData.subtitle || ''}</p>
                 </div>`;
             
-            dynamicContainer.appendChild(section);
+            dynamicContainer.appendChild(div);
         }
 
         // Wir behalten den Namen bei, damit dein Aufruf am Ende funktioniert
@@ -181,11 +268,14 @@
                     }
                     
                     // Scroll-Logik neu initialisieren falls vorhanden
-                    if (window.initAppLogic) window.initAppLogic();
+                    //if (window.initAppLogic) window.initAppLogic();
                 }, (error) => {
-                    // Fehler innerhalb des Snapshots (z.B. fehlender Index!)
-                    console.error("Firestore Fehler:", error);
-                    handleLoadError(error);
+                    console.error("Fehler beim Laden:", error);
+                    if (loaderSlide) {
+                        loaderSlide.style.display = 'block';
+                        document.getElementById('loader-text').innerText = "Fehler beim Laden: " + error.message;
+                        document.getElementById('loader-text').style.color = "red";
+                }
                 });
 
             } catch (error) {
