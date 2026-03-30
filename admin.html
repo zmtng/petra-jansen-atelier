@@ -277,11 +277,11 @@
 
         // Galerie laden & Löschen
         async function loadGallery() {
-            imageList.innerHTML = "<p>Lade Bilder...</p>";
+            galleryList.innerHTML = "<p>Lade Bilder...</p>";
             try {
                 const q = query(collection(db, 'gallery'), orderBy('timestamp', 'desc'));
                 const snapshot = await getDocs(q);
-                imageList.innerHTML = "";
+                galleryList.innerHTML = "";
                 
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
@@ -292,7 +292,7 @@
                         <p><strong>${data.title}</strong></p>
                         <button class="btn-delete" data-id="${docSnap.id}" data-path="${data.storagePath}">Löschen</button>
                     `;
-                    imageList.appendChild(card);
+                    galleryList.appendChild(card);
                 });
 
                 // Delete Events
