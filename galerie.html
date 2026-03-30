@@ -88,10 +88,11 @@
             collection, 
             query, 
             orderBy, 
-            onSnapshot 
+            onSnapshot,
+            getDocs 
         } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-        // Nutze die gleiche Konfiguration wie in der admin.html
+        // Deine Konfiguration (bitte kurz prüfen, ob die Projekt-ID stimmt)
         const firebaseConfig = {
             apiKey: "AIzaSyA4ZOLvHWohYF5IPsF2AmqWf039xMYAVs8",
             authDomain: "mama-portfolio.firebaseapp.com",
@@ -108,29 +109,23 @@
         const dynamicContainer = document.getElementById('dynamic-content');
         const loaderSlide = document.getElementById('db-loader-slide');
 
-        // Hilfsfunktion: Erstellt eine große Slide für jedes Bild
         function appendSlide(imgData, index) {
             const themeIndex = (index % 4) + 1;
-            const displayTitle = imgData.title || '';
-            const displaySubtitle = imgData.subtitle || '';
-            
             const section = document.createElement('section');
             section.className = 'slide presentation-slide';
             section.setAttribute('data-theme', `theme-${themeIndex}`);
             
-            // Hier habe ich die max-height auf 80vh erhöht für "größere" Bilder
             section.innerHTML = `
                 <div class="slide-content" style="max-width: 1200px; width: 100%; padding: 20px;">
-                    <div class="gallery-showcase-item" data-full="${imgData.url}" style="cursor: pointer; text-align: center;">
+                    <div class="gallery-showcase-item" style="text-align: center;">
                         <img loading="lazy" 
-                            class="gallery-showcase-img" 
                             src="${imgData.url}" 
-                            alt="${displayTitle}" 
-                            style="max-height: 80vh; width: auto; max-width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.2); border-radius: 4px; transition: transform 0.3s ease;">
+                            alt="${imgData.title || ''}" 
+                            style="max-height: 80vh; width: auto; max-width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.2); border-radius: 4px;">
                         
-                        <div class="gallery-details" style="margin-top: 25px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; display: inline-block;">
-                            <h2 class="gallery-title" style="margin: 0; font-size: 1.8rem;">${displayTitle}</h2>
-                            <p style="margin: 5px 0 0 0; opacity: 0.8; font-style: italic;">${displaySubtitle}</p>
+                        <div style="margin-top: 25px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; display: inline-block;">
+                            <h2 style="margin: 0; font-size: 1.8rem;">${imgData.title || 'Ohne Titel'}</h2>
+                            <p style="margin: 5px 0 0 0; opacity: 0.8;">${imgData.subtitle || ''}</p>
                         </div>
                     </div>
                 </div>`;
@@ -138,46 +133,80 @@
             dynamicContainer.appendChild(section);
         }
 
-        async function initGallery() {
+        // Wir behalten den Namen bei, damit dein Aufruf am Ende funktioniert
+        async function startIncrementalLoading() {
+            console.log("Galerie-Ladevorgang gestartet...");
+            
+            // 1. Loader sofort sichtbar machen
+            if (loaderSlide) {
+                loaderSlide.style.display = 'block';
+                const loaderText = document.getElementById('loader-text');
+                if (loaderText) loaderText.innerText = "Verbindung zur Galerie wird aufgebaut...";
+            }
+
             try {
                 await signInAnonymously(auth);
-                
-                // Abfrage mit Sortierung (wie im Admin-Bereich)
+                console.log("Authentifizierung erfolgreich.");
+
+                // Abfrage mit Sortierung
                 const q = query(collection(db, 'gallery'), orderBy('timestamp', 'desc'));
 
-                // onSnapshot sorgt dafür, dass die Galerie "live" ist
+                // Wir nutzen onSnapshot, damit die Galerie sich bei Änderungen selbst aktualisiert
                 onSnapshot(q, (snapshot) => {
-                    // Container leeren, bevor neu gezeichnet wird
+                    console.log("Daten empfangen, Anzahl Dokumente:", snapshot.size);
+                    
+                    // Container leeren
                     dynamicContainer.innerHTML = "";
                     
                     if (snapshot.empty) {
-                        loaderSlide.style.display = 'block';
-                        document.getElementById('loader-text').innerText = "Noch keine Werke in der Galerie.";
+                        if (loaderSlide) {
+                            loaderSlide.style.display = 'block';
+                            document.getElementById('loader-text').innerText = "Die Galerie ist momentan noch leer.";
+                        }
                         return;
                     }
 
-                    loaderSlide.style.display = 'none';
+                    // Loader ausblenden
+                    if (loaderSlide) loaderSlide.style.display = 'none';
 
+                    // Slides hinzufügen
                     snapshot.forEach((doc, index) => {
                         appendSlide(doc.data(), index);
                     });
 
-                    // Footer am Ende anhängen
-                    const footerHtml = document.getElementById('footer-template').innerHTML;
-                    dynamicContainer.insertAdjacentHTML('beforeend', footerHtml);
+                    // Footer am Ende einfügen
+                    const footerTemplate = document.getElementById('footer-template');
+                    if (footerTemplate) {
+                        dynamicContainer.insertAdjacentHTML('beforeend', footerTemplate.innerHTML);
+                    }
                     
-                    // Wichtig: Deine main.js Logik (z.B. Lightbox/Scroll) neu initialisieren
+                    // Scroll-Logik neu initialisieren falls vorhanden
                     if (window.initAppLogic) window.initAppLogic();
+                }, (error) => {
+                    // Fehler innerhalb des Snapshots (z.B. fehlender Index!)
+                    console.error("Firestore Fehler:", error);
+                    handleLoadError(error);
                 });
 
             } catch (error) {
-                console.error("Fehler beim Laden:", error);
-                loaderSlide.style.display = 'block';
-                document.getElementById('loader-text').innerText = "Fehler beim Laden der Galerie.";
+                console.error("Initialisierungsfehler:", error);
+                handleLoadError(error);
             }
         }
 
-        initGallery();
+        function handleLoadError(error) {
+            if (loaderSlide) {
+                loaderSlide.style.display = 'block';
+                const loaderText = document.getElementById('loader-text');
+                if (loaderText) {
+                    loaderText.innerText = "Fehler beim Laden: " + error.message;
+                    loaderText.style.color = "red";
+                }
+            }
+        }
+
+        // Startet den Prozess
+        startIncrementalLoading();
     </script>
 </body>
 </html>
