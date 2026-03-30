@@ -119,7 +119,7 @@
     </style>
 </head>
 
-<body class="theme-2 scroll-snap-container">
+<body class="theme-2">
 
     <header class="site-header fixed-header">
         <div class="logo">
@@ -143,7 +143,6 @@
             <div class="slide-content">
                 <h1 class="massive-title">Gesamtwerk</h1>
                 <p class="subtitle">Ein Einblick in mein künstlerisches Schaffen</p>
-                <div class="scroll-indicator"><span></span></div>
             </div>
         </section>
 
@@ -220,7 +219,7 @@
                         item.innerHTML = `
                             <img src="${data.url}" class="grid-img" alt="${data.title}" loading="lazy">
                             <div class="grid-info">
-                                <h3>${data.title || 'Ohne Titel'}</h3>
+                                <h3>${data.title || ''}</h3>
                                 <p>${data.subtitle || ''}</p>
                             </div>
                         `;
