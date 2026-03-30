@@ -7,113 +7,74 @@
     <link rel="stylesheet" href="css/style.css">
 
     <style>
-        /* ============================================================
-           CSS OVERRIDES: Slider-Logik deaktivieren & Grid aktivieren
-           ============================================================ */
-        
-        /* 1. Freies Scrollen auf der gesamten Seite erlauben */
-        html, body, #wrapper, #dynamic-content {
-            height: auto !important;
-            overflow: auto !important; /* Scrollbars erzwingen */
-            overflow-x: hidden !important;
+        /* 1. STICKY FOOTER LOGIK */
+        html, body {
+            height: 100%; /* Wichtig für den Footer-Fix */
+            margin: 0;
         }
 
-        /* 2. Den Container als Grid definieren (2 Spalten) */
-        #dynamic-content {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Genau zwei pro Reihe */
-            gap: 30px; /* Abstand zwischen den Bildern */
-            padding: 40px 20px;
-            max-width: 1400px;
-            margin: 0 auto; /* Zentrieren */
-            box-sizing: border-box;
-            align-items: start; /* Verhindert, dass ungleich hohe Bilder Reihen verzerren */
-        }
-
-        /* Mobil-Optimierung: Auf Handys nur 1 Spalte */
-        @media (max-width: 768px) {
-            #dynamic-content {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-        }
-
-        /* 3. Styling für die neuen Galerie-Karten (Grid-Items) */
-        .gallery-grid-item {
-            position: relative;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        #wrapper {
             display: flex;
             flex-direction: column;
+            min-height: 100vh; /* Mindestens so hoch wie der Bildschirm */
+            height: auto !important; /* Erlaubt Wachstum nach unten */
+            overflow-y: auto !important;
         }
 
-        .gallery-grid-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        main {
+            flex: 1; /* Drückt den Footer nach unten, wenn wenig Bilder da sind */
         }
 
-        /* Bild-Container, damit alle Bilder im Grid ähnlich wirken */
-        .grid-image-wrapper {
-            width: 100%;
-            /* Wir erzwingen kein festes Seitenverhältnis, damit Kunstwerke */
-            /* nicht beschnitten werden. Wir begrenzen nur die Höhe. */
-            text-align: center;
-            background: #000; /* Hintergrund falls Bild nicht ausfüllt */
+        /* 2. GLAS-CONTAINER FÜR DIE BILDER */
+        #image-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px; /* ABSTÄNDE ZWISCHEN DEN BILDERN */
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .grid-item {
+            /* Der Glas-Effekt aus deiner style.css */
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .grid-item:hover {
+            transform: translateY(-8px);
         }
 
         .grid-img {
-            max-width: 100%;
+            width: 100%;
             height: auto;
-            max-height: 70vh; /* Verhindert extrem lange Bilder */
             display: block;
-            margin: 0 auto;
-            object-fit: contain; /* Zeigt das ganze Bild unbeschnitten */
         }
 
-        /* Details unter dem Bild */
-        .grid-details {
+        /* Info-Bereich nur mit Padding, wenn Inhalt da ist */
+        .grid-info {
             padding: 20px;
             text-align: center;
-            background: rgba(0,0,0,0.2);
         }
 
-        .grid-details h2 {
-            font-size: 1.4rem;
-            margin: 0;
-            color: #fff;
-            font-family: var(--font-fancy); /* Nutzt die Schrift aus style.css */
-        }
-
-        .grid-details p {
-            margin: 8px 0 0 0;
-            opacity: 0.7;
-            font-style: italic;
-            font-size: 0.95rem;
-            color: #ddd;
-        }
-
-        /* 4. Loader und Footer Anpassungen für das Grid */
-        #db-loader-slide {
-            grid-column: 1 / -1; /* Loader spannt über beide Spalten */
-            text-align: center;
-            padding: 100px 0;
-            /* Standardmäßig sichtbar, wird per JS ausgeblendet */
-            display: block; 
-        }
-
-        #loader-text {
-            font-size: 1.2rem;
-            color: #fff;
-        }
-
-        /* Der Footer muss sich auch über beide Spalten erstrecken */
-        #dynamic-content > footer {
-            grid-column: 1 / -1;
-            margin-top: 50px;
+        /* Footer Fix */
+        .basic-footer {
             width: 100%;
+            background: rgba(255,255,255,0.2);
+            margin-top: auto; /* Stellt sicher, dass er unten bleibt */
+        }
+
+        @media (max-width: 800px) {
+            #image-grid { grid-template-columns: 1fr; }
         }
 
     </style>
@@ -137,7 +98,7 @@
         </nav>
     </header>
 
-    <div id="main-scroll-container">
+    <div id="main-scroll-container glass-panel about-panel">
         
         <section class="static-section">
             <div class="slide-content">
@@ -160,13 +121,8 @@
             </div>
         </section>
 
-        <footer class="basic-footer">
-            <div class="footer-content">
-                <p>&copy; 2026 Sebastian Kaspers. Alle Rechte vorbehalten.</p>
-                <div class="footer-links">
-                    <a href="datenschutz.html">Datenschutz</a>
-                </div>
-            </div>
+        <footer class="site-footer simple-footer">
+            <p>&copy; 2026 Sebastian Kaspers. Alle Rechte vorbehalten.</p>
         </footer>
 
     </div>
