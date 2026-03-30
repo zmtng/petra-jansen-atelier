@@ -137,30 +137,39 @@
         </nav>
     </header>
 
-    <div id="wrapper">
-        <main id="dynamic-content">
-            
-            <div id="db-loader-slide">
-                <div class="slide-content">
-                    <p id="loader-text">Kunstwerke werden geladen...</p>
+    <div id="main-scroll-container">
+        
+        <section class="static-section">
+            <div class="slide-content">
+                <h1 class="massive-title">Gesamtwerk</h1>
+                <p class="subtitle">Ein Einblick in mein künstlerisches Schaffen</p>
+                <div class="scroll-indicator"><span></span></div>
+            </div>
+        </section>
+
+        <div id="image-grid">
+            <div id="grid-loader">Werke werden geladen...</div>
+        </div>
+
+        <section class="static-section" style="background: rgba(255,255,255,0.1);">
+            <div class="slide-content">
+                <h2 class="massive-title" style="font-size: 3rem;">Interesse geweckt?</h2>
+                <p style="max-width: 600px; margin: 20px auto;">
+                    Jedes Werk ist ein Unikat. Wenn Sie Fragen zu einem bestimmten Bild haben oder ein AuftragsWerk wünschen, freue ich mich über Ihre Nachricht.
+                </p>
+                <a href="kontakt.html" class="cta-button">Jetzt Kontakt aufnehmen</a>
+            </div>
+        </section>
+
+        <footer class="basic-footer">
+            <div class="footer-content">
+                <p>&copy; 2026 Sebastian Kaspers. Alle Rechte vorbehalten.</p>
+                <div class="footer-links">
+                    <a href="datenschutz.html">Datenschutz</a>
                 </div>
             </div>
+        </footer>
 
-            </main>
-    </div>
-
-    <!-- Footer Template (Wird ganz am Ende eingefügt) -->
-    <div id="footer-template" style="display: none;">
-        <section class="slide presentation-slide" data-theme="theme-4">
-            <div class="slide-content">
-                <h2>Interesse an einem Werk?</h2>
-                <p>Lass uns gerne über Verfügbarkeiten und Preise sprechen.</p>
-                <a href="kontakt.html" class="btn btn-large">Kontakt aufnehmen</a>
-            </div>
-            <footer class="slide-footer">
-                <p>&copy; 2026 Sebastian Kaspers. Alle Rechte vorbehalten. | <a href="datenschutz.html" style="color: var(--text-muted); text-decoration: none;">Datenschutz</a></p>
-            </footer>
-        </section>
     </div>
 
     <div id="lightbox" class="lightbox">
@@ -174,16 +183,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-        import { 
-            getFirestore, 
-            collection, 
-            query, 
-            orderBy, 
-            onSnapshot,
-            getDocs 
-        } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-        // Deine Konfiguration (bitte kurz prüfen, ob die Projekt-ID stimmt)
         const firebaseConfig = {
             apiKey: "AIzaSyA4ZOLvHWohYF5IPsF2AmqWf039xMYAVs8",
             authDomain: "mama-portfolio.firebaseapp.com",
@@ -196,107 +197,43 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        
-        const dynamicContainer = document.getElementById('dynamic-content');
-        const loaderSlide = document.getElementById('db-loader-slide');
+        const gridContainer = document.getElementById('image-grid');
 
-        // Hilfsfunktion: Erstellt ein Grid-Item (keine Slide mehr)
-        function appendGalleryItem(imgData) {
-            const div = document.createElement('div');
-            div.className = 'gallery-grid-item';
-            
-            div.innerHTML = `
-                <div class="grid-image-wrapper">
-                    <img loading="lazy" 
-                         class="grid-img"
-                         src="${imgData.url}" 
-                         alt="${imgData.title || 'Kunstwerk'}">
-                </div>
-                <div class="grid-details">
-                    <h2>${imgData.title || 'Ohne Titel'}</h2>
-                    <p>${imgData.subtitle || ''}</p>
-                </div>`;
-            
-            dynamicContainer.appendChild(div);
-        }
-
-        // Wir behalten den Namen bei, damit dein Aufruf am Ende funktioniert
-        async function startIncrementalLoading() {
-            console.log("Galerie-Ladevorgang gestartet...");
-            
-            // 1. Loader sofort sichtbar machen
-            if (loaderSlide) {
-                loaderSlide.style.display = 'block';
-                const loaderText = document.getElementById('loader-text');
-                if (loaderText) loaderText.innerText = "Verbindung zur Galerie wird aufgebaut...";
-            }
-
+        async function initGallery() {
             try {
                 await signInAnonymously(auth);
-                console.log("Authentifizierung erfolgreich.");
-
-                // Abfrage mit Sortierung
                 const q = query(collection(db, 'gallery'), orderBy('timestamp', 'desc'));
 
-                // Wir nutzen onSnapshot, damit die Galerie sich bei Änderungen selbst aktualisiert
                 onSnapshot(q, (snapshot) => {
-                    console.log("Daten empfangen, Anzahl Dokumente:", snapshot.size);
-                    
-                    // Container leeren
-                    dynamicContainer.innerHTML = "";
+                    // Nur die Grid-Items entfernen, nicht den ganzen Container-Inhalt (um Loader zu handhaben)
+                    gridContainer.innerHTML = "";
                     
                     if (snapshot.empty) {
-                        if (loaderSlide) {
-                            loaderSlide.style.display = 'block';
-                            document.getElementById('loader-text').innerText = "Die Galerie ist momentan noch leer.";
-                        }
+                        gridContainer.innerHTML = "<div id='grid-loader'>Noch keine Bilder hochgeladen.</div>";
                         return;
                     }
 
-                    // Loader ausblenden
-                    if (loaderSlide) loaderSlide.style.display = 'none';
-
-                    // Slides hinzufügen
-                    snapshot.forEach((doc, index) => {
-                        appendGalleryItem(doc.data());
+                    snapshot.forEach(docSnap => {
+                        const data = docSnap.data();
+                        const item = document.createElement('div');
+                        item.className = 'grid-item';
+                        item.innerHTML = `
+                            <img src="${data.url}" class="grid-img" alt="${data.title}" loading="lazy">
+                            <div class="grid-info">
+                                <h3>${data.title || 'Ohne Titel'}</h3>
+                                <p>${data.subtitle || ''}</p>
+                            </div>
+                        `;
+                        gridContainer.appendChild(item);
                     });
-
-                    // Footer am Ende einfügen
-                    const footerTemplate = document.getElementById('footer-template');
-                    if (footerTemplate) {
-                        dynamicContainer.insertAdjacentHTML('beforeend', footerTemplate.innerHTML);
-                    }
-                    
-                    // Scroll-Logik neu initialisieren falls vorhanden
-                    //if (window.initAppLogic) window.initAppLogic();
-                }, (error) => {
-                    console.error("Fehler beim Laden:", error);
-                    if (loaderSlide) {
-                        loaderSlide.style.display = 'block';
-                        document.getElementById('loader-text').innerText = "Fehler beim Laden: " + error.message;
-                        document.getElementById('loader-text').style.color = "red";
-                }
                 });
-
-            } catch (error) {
-                console.error("Initialisierungsfehler:", error);
-                handleLoadError(error);
+            } catch (e) {
+                console.error(e);
+                document.getElementById('grid-loader').innerText = "Fehler beim Laden der Galerie.";
             }
         }
 
-        function handleLoadError(error) {
-            if (loaderSlide) {
-                loaderSlide.style.display = 'block';
-                const loaderText = document.getElementById('loader-text');
-                if (loaderText) {
-                    loaderText.innerText = "Fehler beim Laden: " + error.message;
-                    loaderText.style.color = "red";
-                }
-            }
-        }
-
-        // Startet den Prozess
-        startIncrementalLoading();
+        initGallery();
     </script>
 </body>
 </html>
