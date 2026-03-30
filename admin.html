@@ -5,45 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin @ Art by Petra Jansen</title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .admin-section { display: none; }
-        .admin-section.active { display: block; animation: fadeIn 0.5s ease; }
-        
-        .upload-card {
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border: 1px dashed var(--text-muted);
-        }
-
-        .image-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .admin-image-card {
-            background: rgba(255,255,255,0.8);
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        .admin-image-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-        
-        .btn-danger { background-color: #d32f2f; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; text-transform: uppercase; }
-        .btn-danger:hover { background-color: #b71c1c; }
-        .logout-btn { float: right; font-size: 0.8rem; padding: 8px 15px; }
-    </style>
 </head>
 <body class="theme-3 fluid-background">
 
@@ -311,17 +272,34 @@ function setupDeleteButtons() {
     document.querySelectorAll('.btn-delete').forEach(btn => {
         btn.onclick = async () => {
             if (!confirm("Bild wirklich löschen?")) return;
+            
+            // Button deaktivieren, um mehrfaches Klicken zu verhindern
+            btn.disabled = true;
+            btn.innerText = "Lösche...";
+
             const id = btn.dataset.id;
             const path = btn.dataset.path;
 
             try {
+                // 1. Dokument aus Firestore (Datenbank) löschen
                 await deleteDoc(doc(db, 'gallery', id));
-                if (path && path !== "undefined") {
+                
+                // 2. Bild aus Storage löschen (falls Pfad vorhanden und nicht 'undefined')
+                if (path && path !== "undefined" && path.trim() !== "") {
                     await deleteObject(ref(storage, path));
                 }
-                // loadGallery() muss hier NICHT mehr aufgerufen werden, 
-                // da onSnapshot die Änderung automatisch bemerkt!
-            } catch (e) { console.error("Fehler beim Löschen:", e); }
+                
+                // Hinweis: loadGallery() muss nicht neu aufgerufen werden. 
+                // onSnapshot entfernt das gelöschte Bild automatisch sofort aus der Ansicht.
+
+            } catch (e) { 
+                console.error("Fehler beim Löschen:", e);
+                alert("Das Bild konnte nicht gelöscht werden. Fehler: " + e.message);
+                
+                // Button wieder aktivieren, falls es fehlschlägt
+                btn.disabled = false;
+                btn.innerText = "Löschen";
+            }
         };
     });
 }
