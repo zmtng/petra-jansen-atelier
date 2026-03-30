@@ -81,10 +81,17 @@
     <script src="js/main.js"></script>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            query, 
+            orderBy, 
+            onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
+        // Nutze die gleiche Konfiguration wie in der admin.html
         const firebaseConfig = {
             apiKey: "AIzaSyA4ZOLvHWohYF5IPsF2AmqWf039xMYAVs8",
             authDomain: "mama-portfolio.firebaseapp.com",
@@ -97,10 +104,11 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        
         const dynamicContainer = document.getElementById('dynamic-content');
         const loaderSlide = document.getElementById('db-loader-slide');
 
-        // Hilfsfunktion: Fügt eine einzelne Slide zum DOM hinzu
+        // Hilfsfunktion: Erstellt eine große Slide für jedes Bild
         function appendSlide(imgData, index) {
             const themeIndex = (index % 4) + 1;
             const displayTitle = imgData.title || '';
@@ -109,65 +117,67 @@
             const section = document.createElement('section');
             section.className = 'slide presentation-slide';
             section.setAttribute('data-theme', `theme-${themeIndex}`);
+            
+            // Hier habe ich die max-height auf 80vh erhöht für "größere" Bilder
             section.innerHTML = `
-                <div class="slide-content" style="max-width: 1000px; width: 100%;">
-                    <div class="gallery-showcase-item" data-full="${imgData.url}" style="cursor: pointer;">
-                        <img loading="lazy" class="gallery-showcase-img" src="${imgData.url}" alt="${displayTitle}" style="max-height: 65vh; width: auto; max-width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border-radius: 6px;">
-                        <div class="gallery-details" style="display: inline-block; margin-top: 15px;">
-                            <h2 class="gallery-title">${displayTitle}</h2>
-                            <p>${displaySubtitle}</p>
+                <div class="slide-content" style="max-width: 1200px; width: 100%; padding: 20px;">
+                    <div class="gallery-showcase-item" data-full="${imgData.url}" style="cursor: pointer; text-align: center;">
+                        <img loading="lazy" 
+                            class="gallery-showcase-img" 
+                            src="${imgData.url}" 
+                            alt="${displayTitle}" 
+                            style="max-height: 80vh; width: auto; max-width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.2); border-radius: 4px; transition: transform 0.3s ease;">
+                        
+                        <div class="gallery-details" style="margin-top: 25px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; display: inline-block;">
+                            <h2 class="gallery-title" style="margin: 0; font-size: 1.8rem;">${displayTitle}</h2>
+                            <p style="margin: 5px 0 0 0; opacity: 0.8; font-style: italic;">${displaySubtitle}</p>
                         </div>
                     </div>
                 </div>`;
             
             dynamicContainer.appendChild(section);
-            
-            // Sofort dem IntersectionObserver aus main.js bekannt machen
-            if (window.initAppLogic) {
-                window.initAppLogic(); 
-            }
         }
 
-        async function startIncrementalLoading() {
+        async function initGallery() {
             try {
                 await signInAnonymously(auth);
                 
-                // Wir holen erst mal nur die Metadaten (geht sehr schnell)
+                // Abfrage mit Sortierung (wie im Admin-Bereich)
                 const q = query(collection(db, 'gallery'), orderBy('timestamp', 'desc'));
-                const querySnapshot = await getDocs(q);
-                
-                const images = [];
-                querySnapshot.forEach(doc => images.push(doc.data()));
 
-                if (images.length > 0) {
-                    loaderSlide.style.display = 'block';
+                // onSnapshot sorgt dafür, dass die Galerie "live" ist
+                onSnapshot(q, (snapshot) => {
+                    // Container leeren, bevor neu gezeichnet wird
+                    dynamicContainer.innerHTML = "";
                     
-                    // Inkrementelles Einfügen: Jedes Bild einzeln mit kurzer Pause
-                    for (let i = 0; i < images.length; i++) {
-                        appendSlide(images[i], i);
+                    if (snapshot.empty) {
+                        loaderSlide.style.display = 'block';
+                        document.getElementById('loader-text').innerText = "Noch keine Werke in der Galerie.";
+                        return;
                     }
-                }
 
-                // Ganz am Ende: Footer anhängen
-                const footerHtml = document.getElementById('footer-template').innerHTML;
-                dynamicContainer.insertAdjacentHTML('beforeend', footerHtml);
-                
-                // Loader entfernen
-                loaderSlide.remove();
-                
-                // Letzter Check für die Logik
-                if (window.initAppLogic) window.initAppLogic();
+                    loaderSlide.style.display = 'none';
+
+                    snapshot.forEach((doc, index) => {
+                        appendSlide(doc.data(), index);
+                    });
+
+                    // Footer am Ende anhängen
+                    const footerHtml = document.getElementById('footer-template').innerHTML;
+                    dynamicContainer.insertAdjacentHTML('beforeend', footerHtml);
+                    
+                    // Wichtig: Deine main.js Logik (z.B. Lightbox/Scroll) neu initialisieren
+                    if (window.initAppLogic) window.initAppLogic();
+                });
 
             } catch (error) {
                 console.error("Fehler beim Laden:", error);
-                if (loaderSlide) {
-                    document.getElementById('loader-text').innerText = "Fehler beim Laden weiterer Bilder.";
-                }
+                loaderSlide.style.display = 'block';
+                document.getElementById('loader-text').innerText = "Fehler beim Laden der Galerie.";
             }
         }
 
-        // Startet sofort im Hintergrund
-        startIncrementalLoading();
+        initGallery();
     </script>
 </body>
 </html>
