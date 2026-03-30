@@ -114,7 +114,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
         const firebaseConfig = {
@@ -276,41 +276,55 @@
         });
 
         // Galerie laden & Löschen
-        async function loadGallery() {
-            galleryList.innerHTML = "<p>Lade Bilder...</p>";
-            try {
-                const q = query(collection(db, 'gallery'), orderBy('timestamp', 'desc'));
-                const snapshot = await getDocs(q);
-                galleryList.innerHTML = "";
-                
-                snapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    const card = document.createElement('div');
-                    card.className = "admin-image-card";
-                    card.innerHTML = `
-                        <img src="${data.url}" alt="${data.title}">
-                        <p><strong>${data.title}</strong></p>
-                        <button class="btn-delete" data-id="${docSnap.id}" data-path="${data.storagePath}">Löschen</button>
-                    `;
-                    galleryList.appendChild(card);
-                });
+        function loadGallery() {
+    // 1. Die Abfrage definieren (sortiert nach Zeitstempel)
+    const q = query(collection(db, 'gallery'), orderBy('timestamp', 'desc'));
 
-                // Delete Events
-                document.querySelectorAll('.btn-delete').forEach(btn => {
-                    btn.onclick = async () => {
-                        if (!confirm("Bild wirklich löschen?")) return;
-                        const id = btn.getAttribute('data-id');
-                        const path = btn.getAttribute('data-path');
-
-                        try {
-                            await deleteDoc(doc(db, 'gallery', id));
-                            if (path) await deleteObject(ref(storage, path));
-                            loadGallery();
-                        } catch (e) { console.error(e); }
-                    };
-                });
-            } catch (e) { console.error(e); }
+    // 2. onSnapshot nutzen für automatische Updates
+    onSnapshot(q, (snapshot) => {
+        galleryList.innerHTML = ""; // Liste leeren
+        
+        if (snapshot.empty) {
+            galleryList.innerHTML = "<p>Noch keine Bilder vorhanden.</p>";
+            return;
         }
+
+        snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const card = document.createElement('div');
+            card.className = "admin-image-card";
+            card.innerHTML = `
+                <img src="${data.url}" alt="${data.title}">
+                <p><strong>${data.title}</strong></p>
+                <button class="btn-delete" data-id="${docSnap.id}" data-path="${data.storagePath}">Löschen</button>
+            `;
+            galleryList.appendChild(card);
+        });
+
+        // Event-Listener für die neuen Delete-Buttons setzen
+        setupDeleteButtons();
+    });
+}
+
+// Hilfsfunktion für die Lösch-Buttons
+function setupDeleteButtons() {
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.onclick = async () => {
+            if (!confirm("Bild wirklich löschen?")) return;
+            const id = btn.dataset.id;
+            const path = btn.dataset.path;
+
+            try {
+                await deleteDoc(doc(db, 'gallery', id));
+                if (path && path !== "undefined") {
+                    await deleteObject(ref(storage, path));
+                }
+                // loadGallery() muss hier NICHT mehr aufgerufen werden, 
+                // da onSnapshot die Änderung automatisch bemerkt!
+            } catch (e) { console.error("Fehler beim Löschen:", e); }
+        };
+    });
+}
 
     </script>
 </body>
