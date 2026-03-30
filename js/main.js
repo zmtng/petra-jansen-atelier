@@ -127,7 +127,7 @@ window.initAppLogic = () => {
         if (lightbox) {
             // Wir hören auf Klicks im gesamten Dokument (Delegation)
             document.body.addEventListener('click', (e) => {
-                const item = e.target.closest('.gallery-showcase-item, .insta-item, .artwork-card');
+                const item = e.target.closest('.grid-img');
                 if (item) {
                     const fullUrl = item.getAttribute('data-full');
                     if (lightboxImg) lightboxImg.src = fullUrl;

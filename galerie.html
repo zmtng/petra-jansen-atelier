@@ -5,82 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galerie @ Art by Petra Jansen</title>
     <link rel="stylesheet" href="css/style.css">
-
-    <style>
-        /* 1. STICKY FOOTER LOGIK */
-        html, body {
-            height: 100%; /* Wichtig für den Footer-Fix */
-            margin: 0;
-        }
-
-        #wrapper {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh; /* Mindestens so hoch wie der Bildschirm */
-            height: auto !important; /* Erlaubt Wachstum nach unten */
-            overflow-y: auto !important;
-        }
-
-        main {
-            flex: 1; /* Drückt den Footer nach unten, wenn wenig Bilder da sind */
-        }
-
-        /* 2. GLAS-CONTAINER FÜR DIE BILDER */
-        #image-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 40px; /* ABSTÄNDE ZWISCHEN DEN BILDERN */
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        .grid-item {
-            /* Der Glas-Effekt aus deiner style.css */
-            background: rgba(255, 255, 255, 0.45);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 20px;
-            
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .grid-item:hover {
-            transform: translateY(-8px);
-        }
-
-        .grid-img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        /* Info-Bereich nur mit Padding, wenn Inhalt da ist */
-        .grid-info {
-            padding: 20px;
-            text-align: center;
-        }
-
-        /* Footer Fix */
-        .basic-footer {
-            width: 100%;
-            background: rgba(255,255,255,0.2);
-            margin-top: auto; /* Stellt sicher, dass er unten bleibt */
-        }
-
-        @media (max-width: 800px) {
-            #image-grid { grid-template-columns: 1fr; }
-        }
-
-    </style>
 </head>
 
-<body class="theme-2">
+<body class="theme-2 fluid-background">
 
     <header class="site-header fixed-header">
         <div class="logo">
@@ -98,35 +25,39 @@
         </nav>
     </header>
 
-    <div id="main-scroll-container glass-panel about-panel">
+    <main class="page-container">
         
-        <section class="static-section">
-            <div class="slide-content">
-                <h1 class="massive-title">Gesamtwerk</h1>
+        <div class="glass-panel">
+            
+            <!-- Kopfbereich der Galerie -->
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1 class="massive-title" style="font-size: 3rem;">Gesamtwerk</h1>
                 <p class="subtitle">Ein Einblick in mein künstlerisches Schaffen</p>
             </div>
-        </section>
 
-        <div id="image-grid">
-            <div id="grid-loader">Werke werden geladen...</div>
-        </div>
+            <!-- Das Grid, das in der CSS als 2-Spalten-Layout definiert ist -->
+            <div id="image-grid">
+                <div id="grid-loader">Werke werden geladen...</div>
+            </div>
 
-        <section class="static-section" style="background: rgba(255,255,255,0.1);">
-            <div class="slide-content">
-                <h2 class="massive-title" style="font-size: 3rem;">Interesse geweckt?</h2>
-                <p style="max-width: 600px; margin: 20px auto;">
+            <!-- Kontakt-Aufruf unter der Galerie -->
+            <div style="text-align: center; margin-top: 4rem; padding-top: 3rem; border-top: 1px solid rgba(255,255,255,0.4);">
+                <h2 class="massive-title" style="font-size: 2.5rem;">Interesse geweckt?</h2>
+                <p style="max-width: 600px; margin: 15px auto 30px auto; color: var(--text-muted);">
                     Jedes Werk ist ein Unikat. Wenn Sie Fragen zu einem bestimmten Bild haben oder ein AuftragsWerk wünschen, freue ich mich über Ihre Nachricht.
                 </p>
-                <a href="kontakt.html" class="cta-button">Jetzt Kontakt aufnehmen</a>
+                <a href="kontakt.html" class="btn">Jetzt Kontakt aufnehmen</a>
             </div>
-        </section>
 
-        <footer class="site-footer simple-footer">
-            <p>&copy; 2026 Sebastian Kaspers. Alle Rechte vorbehalten.</p>
-        </footer>
+        </div>
 
-    </div>
+    </main>
 
+    <footer class="site-footer simple-footer">
+        <p>&copy; 2026 Sebastian Kaspers. Alle Rechte vorbehalten.</p>
+    </footer>
+
+    <!-- Lightbox Pop-Up -->
     <div id="lightbox" class="lightbox">
         <span class="lightbox-close">&times;</span>
         <img id="lightbox-img" src="" alt="Großansicht">
@@ -160,7 +91,6 @@
                 const q = query(collection(db, 'gallery'), orderBy('timestamp', 'desc'));
 
                 onSnapshot(q, (snapshot) => {
-                    // Nur die Grid-Items entfernen, nicht den ganzen Container-Inhalt (um Loader zu handhaben)
                     gridContainer.innerHTML = "";
                     
                     if (snapshot.empty) {
@@ -173,7 +103,7 @@
                         const item = document.createElement('div');
                         item.className = 'grid-item';
                         item.innerHTML = `
-                            <img src="${data.url}" class="grid-img" alt="${data.title}" loading="lazy">
+                            <img src="${data.url}" class="grid-img" alt="${data.title}" loading="lazy" data-full="${data.url}">
                             <div class="grid-info">
                                 <h3>${data.title || ''}</h3>
                                 <p>${data.subtitle || ''}</p>

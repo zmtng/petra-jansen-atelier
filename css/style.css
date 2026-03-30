@@ -691,3 +691,165 @@ h1, h2, h3 { font-weight: 300; }
     color: var(--text-muted);
     flex-grow: 1; /* Schiebt den Button immer sauber ans untere Ende */
 }
+
+/* * =========================================
+ * AUSGELAGERTE STYLES AUS DEN HTML-DATEIEN
+ * =========================================
+ */
+
+/* --- GLOBALE ANIMATIONEN --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- FOOTER & ADMIN-LINK (Ersatz für onmouseover) --- */
+.admin-link {
+    color: var(--text-muted);
+    opacity: 0.2;
+    text-decoration: none;
+    font-size: 0.7rem;
+    transition: opacity 0.3s ease;
+}
+
+.admin-link:hover {
+    opacity: 1;
+}
+
+/* --- GALERIE (vorher in galerie.html) --- */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+#wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    height: auto !important;
+    overflow-y: auto !important;
+}
+
+main {
+    flex: 1; /* Drückt den Footer nach unten */
+}
+
+#image-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* NEUE KLASSE: Zentriert das Bild und den Text vertikal im Grid-Block */
+.grid-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* Zentriert Inhalte horizontal */
+    text-align: center;   /* Sorgt dafür, dass auch der Text zentriert steht */
+}
+
+/* ANGEPASST: max-width statt width 100%, damit Bilder zentriert werden und nicht erzwingend groß gezogen werden */
+.grid-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    cursor: pointer; /* Zeigt an, dass das Bild klickbar ist (Lightbox) */
+}
+
+.grid-img:hover {
+    transform: scale(1.02);
+}
+
+.grid-info {
+    margin-top: 15px; /* Etwas Platz zwischen Bild und Text */
+}
+
+.grid-info h3 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.grid-info p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* --- GÄSTEBUCH (vorher in gaestebuch.html) --- */
+.guestbook-entries {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.entry-card {
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    animation: fadeIn 0.5s ease;
+}
+
+/* --- ADMIN BEREICH (vorher in admin.html) --- */
+.admin-section { 
+    display: none; 
+}
+
+.admin-section.active { 
+    display: block; 
+    animation: fadeIn 0.5s ease; 
+}
+
+.upload-card {
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px dashed var(--text-muted);
+}
+
+.image-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.admin-image-card {
+    background: rgba(255,255,255,0.8);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.admin-image-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.btn-delete {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-delete:hover {
+    background-color: #ff1a1a;
+}
