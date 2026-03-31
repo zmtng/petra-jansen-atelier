@@ -75,7 +75,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
         const firebaseConfig = {
@@ -236,73 +236,124 @@
             }
         });
 
-        // Galerie laden & Löschen
         function loadGallery() {
-    // 1. Die Abfrage definieren (sortiert nach Zeitstempel)
-    const q = query(collection(db, 'gallery'), orderBy('timestamp', 'desc'));
+            const q = query(collection(db, 'gallery'), orderBy('timestamp', 'desc'));
 
-    // 2. onSnapshot nutzen für automatische Updates
-    onSnapshot(q, (snapshot) => {
-        galleryList.innerHTML = ""; // Liste leeren
-        
-        if (snapshot.empty) {
-            galleryList.innerHTML = "<p>Noch keine Bilder vorhanden.</p>";
-            return;
+            onSnapshot(q, (snapshot) => {
+                galleryList.innerHTML = ""; 
+                
+                if (snapshot.empty) {
+                    galleryList.innerHTML = "<p>Noch keine Bilder vorhanden.</p>";
+                    return;
+                }
+
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const card = document.createElement('div');
+                    card.className = "admin-image-card";
+                    
+                    // Fallback, falls mal kein Titel/Subtitle existiert
+                    const safeTitle = data.title || "";
+                    const safeSubtitle = data.subtitle || "";
+
+                    card.innerHTML = `
+                        <img src="${data.url}" alt="${safeTitle}">
+                        
+                        <div class="view-mode">
+                            <p><strong>${safeTitle}</strong></p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${safeSubtitle}</p>
+                            
+                            <button class="btn-edit" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Bearbeiten</button>
+                            <button class="btn-delete" data-id="${docSnap.id}" data-path="${data.storagePath}">Löschen</button>
+                        </div>
+
+                        <div class="edit-mode" style="display: none; text-align: left; margin-top: 10px;">
+                            <input type="text" class="edit-title" value="${safeTitle}" placeholder="Titel" style="width: 100%; padding: 5px; margin-bottom: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                            <input type="text" class="edit-subtitle" value="${safeSubtitle}" placeholder="Zusatz-Info" style="width: 100%; padding: 5px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                            
+                            <button class="btn-save" data-id="${docSnap.id}" style="background: #2196F3; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Speichern</button>
+                            <button class="btn-cancel" style="background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 5px 10px; border-radius: 4px; cursor: pointer;">Abbrechen</button>
+                        </div>
+                    `;
+                    galleryList.appendChild(card);
+                });
+
+                // Event-Listener für Löschen, Bearbeiten, Speichern und Abbrechen setzen
+                setupGalleryButtons();
+            });
         }
 
-        snapshot.forEach(docSnap => {
-            const data = docSnap.data();
-            const card = document.createElement('div');
-            card.className = "admin-image-card";
-            card.innerHTML = `
-                <img src="${data.url}" alt="${data.title}">
-                <p><strong>${data.title}</strong></p>
-                <button class="btn-delete" data-id="${docSnap.id}" data-path="${data.storagePath}">Löschen</button>
-            `;
-            galleryList.appendChild(card);
-        });
-
-        // Event-Listener für die neuen Delete-Buttons setzen
-        setupDeleteButtons();
-    });
-}
-
-// Hilfsfunktion für die Lösch-Buttons
-function setupDeleteButtons() {
-    document.querySelectorAll('.btn-delete').forEach(btn => {
-        btn.onclick = async () => {
-            if (!confirm("Bild wirklich löschen?")) return;
+        // Hilfsfunktion für die neuen Buttons
+        function setupGalleryButtons() {
             
-            // Button deaktivieren, um mehrfaches Klicken zu verhindern
-            btn.disabled = true;
-            btn.innerText = "Lösche...";
+            // 1. LÖSCHEN
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.onclick = async () => {
+                    if (!confirm("Bild wirklich löschen?")) return;
+                    btn.disabled = true;
+                    btn.innerText = "Lösche...";
+                    const id = btn.dataset.id;
+                    const path = btn.dataset.path;
+                    try {
+                        await deleteDoc(doc(db, 'gallery', id));
+                        if (path && path !== "undefined" && path.trim() !== "") {
+                            await deleteObject(ref(storage, path));
+                        }
+                    } catch (e) { 
+                        console.error("Fehler beim Löschen:", e);
+                        alert("Das Bild konnte nicht gelöscht werden. Fehler: " + e.message);
+                        btn.disabled = false;
+                        btn.innerText = "Löschen";
+                    }
+                };
+            });
 
-            const id = btn.dataset.id;
-            const path = btn.dataset.path;
+            // 2. BEARBEITEN (Formular einblenden)
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.onclick = (e) => {
+                    const card = e.target.closest('.admin-image-card');
+                    card.querySelector('.view-mode').style.display = 'none';
+                    card.querySelector('.edit-mode').style.display = 'block';
+                };
+            });
 
-            try {
-                // 1. Dokument aus Firestore (Datenbank) löschen
-                await deleteDoc(doc(db, 'gallery', id));
-                
-                // 2. Bild aus Storage löschen (falls Pfad vorhanden und nicht 'undefined')
-                if (path && path !== "undefined" && path.trim() !== "") {
-                    await deleteObject(ref(storage, path));
-                }
-                
-                // Hinweis: loadGallery() muss nicht neu aufgerufen werden. 
-                // onSnapshot entfernt das gelöschte Bild automatisch sofort aus der Ansicht.
+            // 3. ABBRECHEN (Formular ausblenden)
+            document.querySelectorAll('.btn-cancel').forEach(btn => {
+                btn.onclick = (e) => {
+                    const card = e.target.closest('.admin-image-card');
+                    card.querySelector('.edit-mode').style.display = 'none';
+                    card.querySelector('.view-mode').style.display = 'block';
+                };
+            });
 
-            } catch (e) { 
-                console.error("Fehler beim Löschen:", e);
-                alert("Das Bild konnte nicht gelöscht werden. Fehler: " + e.message);
-                
-                // Button wieder aktivieren, falls es fehlschlägt
-                btn.disabled = false;
-                btn.innerText = "Löschen";
-            }
-        };
-    });
-}
+            // 4. SPEICHERN (Neue Daten an Firebase senden)
+            document.querySelectorAll('.btn-save').forEach(btn => {
+                btn.onclick = async (e) => {
+                    const card = e.target.closest('.admin-image-card');
+                    const id = btn.dataset.id;
+                    const newTitle = card.querySelector('.edit-title').value;
+                    const newSubtitle = card.querySelector('.edit-subtitle').value;
+
+                    btn.innerText = "Speichert...";
+                    btn.disabled = true;
+
+                    try {
+                        // Aktualisiert nur den Titel und Untertitel in der Datenbank
+                        await updateDoc(doc(db, 'gallery', id), {
+                            title: newTitle.trim(),
+                            subtitle: newSubtitle.trim()
+                        });
+                        // Hinweis: Wir müssen die Formulare nicht manuell schließen.
+                        // Durch updateDoc schlägt onSnapshot an und die Karte baut sich sofort mit neuen Daten neu auf!
+                    } catch (error) {
+                        console.error("Fehler beim Speichern:", error);
+                        alert("Fehler beim Speichern: " + error.message);
+                        btn.innerText = "Speichern";
+                        btn.disabled = false;
+                    }
+                };
+            });
+        }
 
     </script>
 </body>
