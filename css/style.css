@@ -223,22 +223,6 @@ h1, h2, h3 { font-weight: 300; }
     opacity: 0.7;
 }
 
-
-/* =========================================
-   MOBILE ANPASSUNG (Responsive Design)
-   ========================================= */
-@media (max-width: 768px) {
-    .site-header {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1rem 5%;
-    }
-    
-    .massive-title { font-size: 2.5rem; }
-    .presentation-slide h2 { font-size: 2rem; }
-    .presentation-slide p { font-size: 1rem; }
-}
-
 /* =========================================
    ABOUT TEASER & FOOTER
    ========================================= */
@@ -269,19 +253,7 @@ h1, h2, h3 { font-weight: 300; }
     font-size: 0.85rem;
 }
 
-/* =========================================
-   MOBILE ANPASSUNG (Responsive Design)
-   ========================================= */
-@media (max-width: 768px) {
-    .site-header {
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-    
-    .hero h1 {
-        font-size: 2.5rem;
-    }
-}
+
 
 /* =========================================
    LIGHTBOX POP-UP (Für hochauflösende Bilder)
@@ -891,3 +863,29 @@ main {
 .btn-danger { background-color: #d32f2f; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; text-transform: uppercase; }
 .btn-danger:hover { background-color: #b71c1c; }
 .logout-btn { float: right; font-size: 0.8rem; padding: 8px 15px; }
+
+/* =========================================
+   MOBILE ANPASSUNG (Responsive Design)
+   ========================================= */
+@media (max-width: 768px) {
+    .site-header {
+        flex-direction: column;
+        gap: 0.5rem; 
+        padding: 12px 5%; 
+    }
+    
+    .main-nav ul {
+        flex-wrap: wrap; 
+        justify-content: center; 
+        gap: 8px 15px; 
+    }
+
+    .main-nav a {
+        font-size: 0.8rem; 
+        white-space: nowrap; 
+    }
+
+    .massive-title { font-size: 2.5rem; }
+    .presentation-slide h2 { font-size: 2rem; }
+    .presentation-slide p { font-size: 1rem; }
+}
