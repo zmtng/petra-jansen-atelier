@@ -889,3 +889,16 @@ main {
     .presentation-slide h2 { font-size: 2rem; }
     .presentation-slide p { font-size: 1rem; }
 }
+
+/* MOBILE GALERIE: 1-Spaltig für großen Kunst-Fokus */
+@media (max-width: 768px) {
+    .glass-panel {
+        padding: 1.5rem 1rem; 
+    }
+    
+    #image-grid {
+        grid-template-columns: 1fr; 
+        gap: 30px; 
+        padding: 10px 0; 
+    }
+}
