@@ -176,7 +176,19 @@ h1, h2, h3 { font-weight: 300; }
     font-size: 4.5rem;
     font-weight: 200;
     letter-spacing: 2px;
-    margin-bottom: 1rem;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+}
+
+/* Erste Folie: Platz für den fixierten Header reservieren, damit der Titel
+   nicht dahinter rutscht. Die Header-Höhe (auf dem Handy variabel, weil die
+   Navigation umbricht) wird per JS in --header-h gesetzt. "safe center"
+   zentriert auf großen Schirmen und richtet bei zu wenig Platz oben aus
+   (statt den Titel abzuschneiden). */
+.presentation-slide.hero-slide {
+    align-items: safe center;
+    padding-top: calc(var(--header-h, 80px) + 20px);
+    padding-bottom: 28px;
 }
 
 .subtitle {
@@ -664,6 +676,114 @@ h1, h2, h3 { font-weight: 300; }
     flex-grow: 1; /* Schiebt den Button immer sauber ans untere Ende */
 }
 
+/* =========================================
+   AUSSTELLUNGS-HINWEIS (Startseite, Slide 1)
+   ========================================= */
+.exhibition-card {
+    max-width: 640px;
+    margin: 0 auto 1.5rem auto;
+    padding: 1.3rem 2.25rem;
+    line-height: 1.4;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 22px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+}
+
+.exhibition-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    margin-bottom: 0.8rem;
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #fc8a6f;
+    animation: pulse 2.2s infinite;
+}
+
+@keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(252, 138, 111, 0.5); }
+    70%  { box-shadow: 0 0 0 10px rgba(252, 138, 111, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(252, 138, 111, 0); }
+}
+
+.exhibition-card .exhibition-dates {
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--text-main);
+    margin-bottom: 0.6rem;
+}
+
+.exhibition-card .exhibition-venue {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.exhibition-venue a {
+    color: var(--text-muted);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.exhibition-venue a:hover {
+    color: var(--text-main);
+    border-bottom-color: var(--text-main);
+}
+
+.exhibition-hours {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    padding-top: 0.85rem;
+}
+
+.hours-label {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 0.7rem;
+}
+
+.exhibition-hours .hours-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+}
+
+.exhibition-hours .hours-list li {
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 20px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.88rem;
+    color: var(--text-main);
+    white-space: nowrap;
+}
+
+.exhibition-hours .hours-list li strong {
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-right: 0.35rem;
+}
+
 /* * =========================================
  * AUSGELAGERTE STYLES AUS DEN HTML-DATEIEN
  * =========================================
@@ -888,6 +1008,14 @@ main {
     .massive-title { font-size: 2.5rem; }
     .presentation-slide h2 { font-size: 2rem; }
     .presentation-slide p { font-size: 1rem; }
+
+    /* Ausstellungs-Hinweis kompakter auf dem Handy */
+    .exhibition-card {
+        padding: 1.4rem 1.25rem;
+        margin-bottom: 1.75rem;
+    }
+    .exhibition-card .exhibition-dates { font-size: 1rem; }
+    .exhibition-hours ul { gap: 0.3rem 1.25rem; }
 }
 
 /* MOBILE GALERIE: 1-Spaltig für großen Kunst-Fokus */

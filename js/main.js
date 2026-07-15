@@ -4,7 +4,26 @@
  */
 
 window.initAppLogic = () => {
-    
+
+    // ==========================================
+    // 0. HEADER-HÖHE ALS CSS-VARIABLE
+    // ==========================================
+    // Der Header ist fixiert und auf dem Handy unterschiedlich hoch (die
+    // Navigation bricht um). Wir schreiben die echte Höhe in --header-h,
+    // damit der Ausstellungs-Hinweis auf der Startseite immer sauber darunter passt.
+    const setHeaderHeight = () => {
+        const header = document.querySelector('.site-header');
+        if (header) {
+            document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+        }
+    };
+    setHeaderHeight();
+    if (!window.headerHeightBound) {
+        window.headerHeightBound = true;
+        window.addEventListener('resize', setHeaderHeight);
+        window.addEventListener('load', setHeaderHeight);
+    }
+
     // ==========================================
     // 1. THEME & SICHTBARKEIT (OBSERVER)
     // ==========================================
