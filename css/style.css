@@ -784,6 +784,276 @@ h1, h2, h3 { font-weight: 300; }
     margin-right: 0.35rem;
 }
 
+/* =========================================
+   AUSSTELLUNGS-ÜBERSICHT (ausstellungen.html)
+   ========================================= */
+.exhibition-section {
+    margin-bottom: 3.5rem;
+}
+
+.exhibition-section-title {
+    font-size: 1.9rem;
+    font-weight: 300;
+    letter-spacing: 1px;
+    color: var(--text-main);
+    padding-bottom: 0.75rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.exhibition-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Einzelne Ausstellungs-Karte im Glas-Look */
+.exhibition-item {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 22px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.exhibition-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.1);
+}
+
+/* Karten mit Bild: zweispaltig auf dem Desktop */
+.exhibition-item.has-media {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+    align-items: stretch;
+}
+
+.exhibition-item-media {
+    overflow: hidden;
+    min-height: 220px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.exhibition-item-media .grid-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 0;
+    box-shadow: none;
+    cursor: pointer;
+    transition: transform 0.4s ease;
+}
+
+.exhibition-item-media .grid-img:hover {
+    transform: scale(1.03);
+}
+
+.exhibition-item-body {
+    padding: 2rem 2.25rem;
+    text-align: left;
+}
+
+/* Status-Badge (Jetzt zu sehen / Kommend / Vergangen) */
+.exhibition-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.exhibition-status--current {
+    background: rgba(252, 138, 111, 0.18);
+    color: #b8502f;
+}
+
+.exhibition-status--upcoming {
+    background: rgba(110, 150, 200, 0.18);
+    color: #2f5b8f;
+}
+
+.exhibition-status--past {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-muted);
+}
+
+.exhibition-item-title {
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+    line-height: 1.25;
+}
+
+.exhibition-item-body .exhibition-dates {
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--text-main);
+    margin-bottom: 0.6rem;
+}
+
+.exhibition-item-body .exhibition-venue {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.exhibition-desc {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+}
+
+/* Öffnungszeiten linksbündig innerhalb der Übersichtskarte */
+.exhibition-item .exhibition-hours .hours-list {
+    justify-content: flex-start;
+}
+
+.exhibition-item .exhibition-hours .hours-label {
+    text-align: left;
+}
+
+/* Vergangene Ausstellungen dezenter darstellen */
+.exhibition-list--past .exhibition-item {
+    opacity: 0.85;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.04);
+}
+
+.exhibition-list--past .exhibition-item-media .grid-img {
+    filter: grayscale(35%);
+}
+
+.exhibition-loader,
+.exhibition-empty {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 1.5rem;
+    font-size: 1.05rem;
+}
+
+.exhibition-empty a {
+    color: var(--text-main);
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .exhibition-item.has-media {
+        grid-template-columns: 1fr; /* Bild oben, Text darunter */
+    }
+    .exhibition-item-media {
+        min-height: 200px;
+        max-height: 300px;
+    }
+    .exhibition-item-body {
+        padding: 1.5rem 1.4rem;
+    }
+    .exhibition-section-title {
+        font-size: 1.5rem;
+    }
+    .exhibition-item-title {
+        font-size: 1.35rem;
+    }
+}
+
+/* =========================================
+   ADMIN: TABS (Galerie / Ausstellungen)
+   ========================================= */
+.admin-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0 0 2rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap;
+}
+
+.admin-tab {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.75rem 1.25rem;
+    font-family: var(--font-main);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+    margin-bottom: -1px;
+}
+
+.admin-tab:hover {
+    color: var(--text-main);
+}
+
+.admin-tab.active {
+    color: var(--text-main);
+    border-bottom-color: var(--text-main);
+    font-weight: 600;
+}
+
+.admin-tab-content {
+    display: none;
+}
+
+.admin-tab-content.active {
+    display: block;
+    animation: fadeIn 0.4s ease;
+}
+
+/* Karte für eine bestehende Ausstellung im Admin-Bereich */
+.exhibition-admin-card {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 1.25rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.25rem;
+}
+
+.exhibition-admin-card h4 {
+    font-size: 1.15rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.exhibition-admin-card .ea-meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+
+.exhibition-admin-card .ea-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    margin-bottom: 0.6rem;
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-muted);
+}
+
+.exhibition-admin-card .ea-thumb {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+    float: right;
+    margin-left: 1rem;
+}
+
 /* * =========================================
  * AUSGELAGERTE STYLES AUS DEN HTML-DATEIEN
  * =========================================

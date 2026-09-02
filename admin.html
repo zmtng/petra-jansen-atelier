@@ -35,6 +35,14 @@
             <!-- BEREICH 2: DASHBOARD (Wird nach Login sichtbar) -->
             <div id="dashboard-section" class="admin-section">
                 <button id="logout-btn" class="btn btn-outline logout-btn">Ausloggen</button>
+
+                <div class="admin-tabs">
+                    <button class="admin-tab active" data-target="tab-gallery">Galerie</button>
+                    <button class="admin-tab" data-target="tab-exhibitions">Ausstellungen</button>
+                </div>
+
+                <!-- ============ TAB: GALERIE ============ -->
+                <div id="tab-gallery" class="admin-tab-content active">
                 <h1 class="page-title">Galerie-Verwaltung</h1>
                 <p class="page-subtitle">Hier kannst du neue Bilder hochladen oder alte entfernen.</p>
 
@@ -66,6 +74,75 @@
                 <div id="admin-gallery-list" class="image-list">
                     <p>Lade Bilder aus der Datenbank...</p>
                 </div>
+                </div><!-- /tab-gallery -->
+
+                <!-- ============ TAB: AUSSTELLUNGEN ============ -->
+                <div id="tab-exhibitions" class="admin-tab-content">
+                    <h1 class="page-title">Ausstellungs-Verwaltung</h1>
+                    <p class="page-subtitle">Hier legst du kommende, aktuelle und vergangene Ausstellungen an. Die Seite sortiert automatisch nach dem Enddatum.</p>
+
+                    <div class="upload-card">
+                        <h3 id="ex-form-title">Neue Ausstellung hinzufügen</h3>
+                        <form id="exhibition-form" class="glass-form" style="margin-top: 1rem;">
+
+                            <div class="form-group">
+                                <label>Titel der Ausstellung (optional)</label>
+                                <input type="text" id="ex-title" placeholder="z.B. Farbräume – Abstrakte Malerei">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Ort / Veranstalter *Pflichtfeld*</label>
+                                <input type="text" id="ex-venue" required placeholder="z.B. Kreisverwaltung Cochem-Zell · Foyer">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Adresse (optional – wird als Karten-Link angezeigt)</label>
+                                <input type="text" id="ex-address" placeholder="z.B. Endertplatz 2, 56812 Cochem">
+                            </div>
+
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <div class="form-group" style="flex: 1; min-width: 160px;">
+                                    <label>Startdatum *Pflichtfeld*</label>
+                                    <input type="date" id="ex-start" required>
+                                </div>
+                                <div class="form-group" style="flex: 1; min-width: 160px;">
+                                    <label>Enddatum *Pflichtfeld*</label>
+                                    <input type="date" id="ex-end" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Zeitraum-Text (optional)</label>
+                                <input type="text" id="ex-datetext" placeholder="Leer lassen = automatisch aus den Daten, z.B. „4. August – 4. September 2026“">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Öffnungszeiten (optional – eine Zeile pro Eintrag)</label>
+                                <textarea id="ex-hours" rows="4" placeholder="Mo–Mi 7:30–16:00&#10;Do 7:30–17:00&#10;Fr 7:30–13:00&#10;Sa & So geschlossen"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Beschreibung (optional)</label>
+                                <textarea id="ex-desc" rows="3" placeholder="Ein paar Worte zur Ausstellung..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Plakat / Bild (optional)</label>
+                                <input type="file" id="ex-image" accept="image/*">
+                                <p id="ex-current-image" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; display: none;"></p>
+                            </div>
+
+                            <button type="submit" id="ex-submit" class="btn">Ausstellung speichern</button>
+                            <button type="button" id="ex-cancel" class="btn btn-outline" style="display: none; margin-left: 10px;">Bearbeiten abbrechen</button>
+                            <p id="ex-status" style="margin-top: 10px; font-weight: bold;"></p>
+                        </form>
+                    </div>
+
+                    <h3>Angelegte Ausstellungen</h3>
+                    <div id="admin-exhibition-list">
+                        <p>Lade Ausstellungen aus der Datenbank...</p>
+                    </div>
+                </div><!-- /tab-exhibitions -->
             </div>
 
         </div>
@@ -108,6 +185,7 @@
                 loginSec.classList.remove('active');
                 dashSec.classList.add('active');
                 loadGallery();
+                loadExhibitions();
             } else {
                 // Ausgeloggt
                 dashSec.classList.remove('active');
@@ -281,6 +359,284 @@
                 // Event-Listener für Löschen, Bearbeiten, Speichern und Abbrechen setzen
                 setupGalleryButtons();
             });
+        }
+
+        // =========================================================
+        //  TAB-UMSCHALTUNG (Galerie / Ausstellungen)
+        // =========================================================
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                const target = document.getElementById(tab.dataset.target);
+                if (target) target.classList.add('active');
+            });
+        });
+
+        // =========================================================
+        //  AUSSTELLUNGS-VERWALTUNG
+        // =========================================================
+        const exForm = document.getElementById('exhibition-form');
+        const exTitle = document.getElementById('ex-title');
+        const exVenue = document.getElementById('ex-venue');
+        const exAddress = document.getElementById('ex-address');
+        const exStart = document.getElementById('ex-start');
+        const exEnd = document.getElementById('ex-end');
+        const exDateText = document.getElementById('ex-datetext');
+        const exHours = document.getElementById('ex-hours');
+        const exDesc = document.getElementById('ex-desc');
+        const exImage = document.getElementById('ex-image');
+        const exSubmit = document.getElementById('ex-submit');
+        const exCancel = document.getElementById('ex-cancel');
+        const exStatus = document.getElementById('ex-status');
+        const exFormTitle = document.getElementById('ex-form-title');
+        const exCurrentImage = document.getElementById('ex-current-image');
+        const exList = document.getElementById('admin-exhibition-list');
+
+        let editingId = null;
+        let editingImageUrl = "";
+        let editingStoragePath = "";
+        let exCache = {};
+        let exListenerSet = false;
+
+        const AMONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni",
+                         "Juli", "August", "September", "Oktober", "November", "Dezember"];
+
+        function escapeHtml(s) {
+            return String(s || "")
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        function parseISO(s) {
+            if (!s) return null;
+            const d = new Date(s + "T00:00:00");
+            return isNaN(d.getTime()) ? null : d;
+        }
+
+        function adminFormatRange(startStr, endStr) {
+            const start = parseISO(startStr);
+            const end = parseISO(endStr);
+            if (!start && !end) return "";
+            if (start && !end) return `ab ${start.getDate()}. ${AMONTHS[start.getMonth()]} ${start.getFullYear()}`;
+            if (!start && end) return `bis ${end.getDate()}. ${AMONTHS[end.getMonth()]} ${end.getFullYear()}`;
+            const sameYear = start.getFullYear() === end.getFullYear();
+            const sameMonth = sameYear && start.getMonth() === end.getMonth();
+            if (sameMonth) return `${start.getDate()}.–${end.getDate()}. ${AMONTHS[end.getMonth()]} ${end.getFullYear()}`;
+            if (sameYear) return `${start.getDate()}. ${AMONTHS[start.getMonth()]} – ${end.getDate()}. ${AMONTHS[end.getMonth()]} ${end.getFullYear()}`;
+            return `${start.getDate()}. ${AMONTHS[start.getMonth()]} ${start.getFullYear()} – ${end.getDate()}. ${AMONTHS[end.getMonth()]} ${end.getFullYear()}`;
+        }
+
+        function adminStatus(data) {
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const s = parseISO(data.startDate);
+            const e = parseISO(data.endDate);
+            if (e && e < today) return "Vergangen";
+            if (s && s > today) return "Kommend";
+            return "Aktuell";
+        }
+
+        function resetExForm() {
+            exForm.reset();
+            editingId = null;
+            editingImageUrl = "";
+            editingStoragePath = "";
+            exFormTitle.innerText = "Neue Ausstellung hinzufügen";
+            exSubmit.innerText = "Ausstellung speichern";
+            exCancel.style.display = "none";
+            exCurrentImage.style.display = "none";
+            exCurrentImage.innerText = "";
+        }
+
+        exCancel.addEventListener('click', resetExForm);
+
+        // --- Speichern (Neu anlegen ODER Bearbeiten) ---
+        exForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const venue = exVenue.value.trim();
+            const start = exStart.value;
+            const end = exEnd.value;
+
+            if (!venue || !start || !end) return;
+            if (end < start) {
+                exStatus.style.color = "red";
+                exStatus.innerText = "Das Enddatum darf nicht vor dem Startdatum liegen.";
+                return;
+            }
+
+            exSubmit.disabled = true;
+            exStatus.style.color = "var(--text-main)";
+
+            let imageUrl = editingImageUrl;
+            let storagePath = editingStoragePath;
+
+            try {
+                const file = exImage.files[0];
+                if (file) {
+                    exStatus.innerText = "Bild wird optimiert (WebP)...";
+                    const webpBlob = await processAndConvertImage(file);
+                    exStatus.innerText = "Bild wird hochgeladen...";
+                    const baseName = file.name.split('.').slice(0, -1).join('.') || 'ausstellung';
+                    const filePath = `exhibitions/${Date.now()}_${baseName}.webp`;
+                    const sRef = ref(storage, filePath);
+                    await uploadBytes(sRef, webpBlob, {
+                        contentType: 'image/webp',
+                        cacheControl: 'public,max-age=31536000'
+                    });
+                    const newUrl = await getDownloadURL(sRef);
+                    const oldPath = storagePath;
+                    imageUrl = newUrl;
+                    storagePath = filePath;
+                    // Altes Bild löschen, falls ersetzt
+                    if (oldPath && oldPath.trim() && oldPath !== filePath) {
+                        try { await deleteObject(ref(storage, oldPath)); }
+                        catch (err) { console.warn("Altes Bild konnte nicht gelöscht werden:", err); }
+                    }
+                }
+
+                const payload = {
+                    title: exTitle.value.trim(),
+                    venue,
+                    address: exAddress.value.trim(),
+                    startDate: start,
+                    endDate: end,
+                    dateText: exDateText.value.trim(),
+                    hours: exHours.value,
+                    description: exDesc.value.trim(),
+                    imageUrl: imageUrl || "",
+                    storagePath: storagePath || ""
+                };
+
+                exStatus.innerText = "Speichern...";
+                if (editingId) {
+                    await updateDoc(doc(db, 'exhibitions', editingId), payload);
+                } else {
+                    payload.timestamp = Date.now();
+                    await addDoc(collection(db, 'exhibitions'), payload);
+                }
+
+                exStatus.style.color = "green";
+                exStatus.innerText = editingId ? "Ausstellung aktualisiert!" : "Ausstellung gespeichert!";
+                resetExForm();
+                setTimeout(() => { exStatus.innerText = ""; }, 3000);
+
+            } catch (err) {
+                console.error("Fehler beim Speichern der Ausstellung:", err);
+                exStatus.style.color = "red";
+                exStatus.innerText = "Fehler beim Speichern.";
+            } finally {
+                exSubmit.disabled = false;
+            }
+        });
+
+        // --- Liste laden ---
+        function loadExhibitions() {
+            if (exListenerSet) return; // nur einen Listener aufbauen
+            exListenerSet = true;
+
+            onSnapshot(collection(db, 'exhibitions'), (snapshot) => {
+                exCache = {};
+                if (snapshot.empty) {
+                    exList.innerHTML = "<p>Noch keine Ausstellungen angelegt.</p>";
+                    return;
+                }
+
+                const docs = [];
+                snapshot.forEach(d => {
+                    const data = { id: d.id, ...d.data() };
+                    exCache[d.id] = data;
+                    docs.push(data);
+                });
+
+                // Neueste/kommende zuerst (nach Startdatum absteigend)
+                docs.sort((a, b) => (b.startDate || "").localeCompare(a.startDate || ""));
+
+                exList.innerHTML = "";
+                docs.forEach(data => {
+                    const card = document.createElement('div');
+                    card.className = "exhibition-admin-card";
+                    const range = (data.dateText && data.dateText.trim())
+                        ? data.dateText
+                        : adminFormatRange(data.startDate, data.endDate);
+                    const thumb = data.imageUrl
+                        ? `<img src="${data.imageUrl}" class="ea-thumb" alt="">` : "";
+                    card.innerHTML = `
+                        ${thumb}
+                        <span class="ea-badge">${adminStatus(data)}</span>
+                        <h4>${escapeHtml(data.title || data.venue || 'Ausstellung')}</h4>
+                        <p class="ea-meta">${escapeHtml(range)}${data.venue ? ' &middot; ' + escapeHtml(data.venue) : ''}</p>
+                        <button class="btn-edit btn-ex-edit" data-id="${data.id}" style="background: #4CAF50; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer;">Bearbeiten</button>
+                        <button class="btn-delete btn-ex-delete" data-id="${data.id}" data-path="${data.storagePath || ''}">Löschen</button>
+                    `;
+                    exList.appendChild(card);
+                });
+
+                setupExButtons();
+            }, (error) => {
+                console.error("Fehler beim Laden der Ausstellungen:", error);
+                exList.innerHTML = "<p style='color:red;'>Fehler beim Laden der Ausstellungen.</p>";
+            });
+        }
+
+        function setupExButtons() {
+            document.querySelectorAll('.btn-ex-delete').forEach(btn => {
+                btn.onclick = async () => {
+                    if (!confirm("Ausstellung wirklich löschen?")) return;
+                    btn.disabled = true;
+                    btn.innerText = "Lösche...";
+                    const id = btn.dataset.id;
+                    const path = btn.dataset.path;
+                    try {
+                        await deleteDoc(doc(db, 'exhibitions', id));
+                        if (path && path.trim() && path !== "undefined") {
+                            try { await deleteObject(ref(storage, path)); }
+                            catch (err) { console.warn("Bild nicht gelöscht:", err); }
+                        }
+                        if (editingId === id) resetExForm();
+                    } catch (e) {
+                        console.error("Fehler beim Löschen:", e);
+                        alert("Die Ausstellung konnte nicht gelöscht werden: " + e.message);
+                        btn.disabled = false;
+                        btn.innerText = "Löschen";
+                    }
+                };
+            });
+
+            document.querySelectorAll('.btn-ex-edit').forEach(btn => {
+                btn.onclick = () => startEditExhibition(btn.dataset.id);
+            });
+        }
+
+        function startEditExhibition(id) {
+            const data = exCache[id];
+            if (!data) return;
+            editingId = id;
+            editingImageUrl = data.imageUrl || "";
+            editingStoragePath = data.storagePath || "";
+
+            exTitle.value = data.title || "";
+            exVenue.value = data.venue || "";
+            exAddress.value = data.address || "";
+            exStart.value = data.startDate || "";
+            exEnd.value = data.endDate || "";
+            exDateText.value = data.dateText || "";
+            exHours.value = data.hours || "";
+            exDesc.value = data.description || "";
+            exImage.value = "";
+
+            exFormTitle.innerText = "Ausstellung bearbeiten";
+            exSubmit.innerText = "Änderungen speichern";
+            exCancel.style.display = "inline-block";
+
+            if (editingImageUrl) {
+                exCurrentImage.style.display = "block";
+                exCurrentImage.innerText = "Ein Bild ist hinterlegt. Es bleibt erhalten, wenn du kein neues auswählst.";
+            } else {
+                exCurrentImage.style.display = "none";
+            }
+
+            exFormTitle.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         // Hilfsfunktion für die neuen Buttons

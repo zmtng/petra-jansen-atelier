@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ausstellungen der Künstlerin Petra Jansen aus Lutzerath – eine Übersicht über kommende, aktuelle und vergangene Ausstellungen ihrer Werke.">
+    <title>Ausstellungen @ Art by Petra Jansen</title>
+    <link rel="stylesheet" href="css/style.css?v=2">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://petra-jansen.art/ausstellungen.html">
+    <meta property="og:title" content="Petra Jansen | Ausstellungen">
+    <meta property="og:description" content="Übersicht über kommende, aktuelle und vergangene Ausstellungen von Petra Jansen.">
+    <meta property="og:image" content="https://petra-jansen.art/Vorschaubild.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://petra-jansen.art/ausstellungen.html">
+    <meta name="twitter:title" content="Petra Jansen | Ausstellungen">
+    <meta name="twitter:description" content="Übersicht über kommende, aktuelle und vergangene Ausstellungen von Petra Jansen.">
+    <meta name="twitter:image" content="https://petra-jansen.art/Vorschaubild.png">
+</head>
+
+<body class="theme-2 fluid-background">
+
+    <header class="site-header fixed-header">
+        <div class="logo">
+            <a href="index.html">Art by Petra Jansen</a>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="galerie.html">Galerie</a></li>
+                <li><a href="ausstellungen.html" class="active">Ausstellungen</a></li>
+                <li><a href="ueber-mich.html">Über mich</a></li>
+                <li><a href="kontakt.html">Kontakt</a></li>
+                <li><a href="gaestebuch.html">Gästebuch</a></li>
+                <li><a href="datenschutz.html">Datenschutz</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="page-container">
+
+        <div class="glass-panel">
+
+            <!-- Kopfbereich -->
+            <div style="text-align: center; margin-bottom: 2.5rem;">
+                <h1 class="massive-title" style="font-size: 3rem;">Ausstellungen</h1>
+                <p class="page-subtitle" style="max-width: 620px; margin: 0.75rem auto 0 auto;">
+                    Erleben Sie meine Werke im Original. Hier finden Sie eine Übersicht über
+                    kommende, aktuelle und vergangene Ausstellungen.
+                </p>
+            </div>
+
+            <!-- Kommende & aktuelle Ausstellungen -->
+            <section class="exhibition-section" id="upcoming-section">
+                <div class="exhibition-list" id="upcoming-list">
+                    <p class="exhibition-loader">Ausstellungen werden geladen&hellip;</p>
+                </div>
+            </section>
+
+            <!-- Vergangene Ausstellungen (wird bei Bedarf eingeblendet) -->
+            <section class="exhibition-section" id="past-section" hidden>
+                <h2 class="exhibition-section-title">Vergangene Ausstellungen</h2>
+                <div class="exhibition-list exhibition-list--past" id="past-list"></div>
+            </section>
+
+            <!-- Kontakt-Aufruf -->
+            <div style="text-align: center; margin-top: 4rem; padding-top: 3rem; border-top: 1px solid rgba(255,255,255,0.4);">
+                <h2 class="massive-title" style="font-size: 2.2rem;">Sie möchten mich besuchen?</h2>
+                <p style="max-width: 600px; margin: 15px auto 30px auto; color: var(--text-muted);">
+                    Ich freue mich über jeden Besuch. Bei Fragen zu einer Ausstellung oder einem
+                    bestimmten Werk schreiben Sie mir gerne.
+                </p>
+                <a href="kontakt.html" class="btn">Jetzt Kontakt aufnehmen</a>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="site-footer simple-footer">
+        <p>&copy; 2026 Art by Petra Jansen. Alle Rechte vorbehalten.</p>
+    </footer>
+
+    <!-- Lightbox Pop-Up (für Ausstellungsbilder) -->
+    <div id="lightbox" class="lightbox">
+        <span class="lightbox-close">&times;</span>
+        <img id="lightbox-img" src="" alt="Großansicht">
+        <p id="lightbox-caption" class="lightbox-caption"></p>
+    </div>
+
+    <script src="js/main.js?v=2"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4ZOLvHWohYF5IPsF2AmqWf039xMYAVs8",
+            authDomain: "mama-portfolio.firebaseapp.com",
+            projectId: "mama-portfolio",
+            storageBucket: "mama-portfolio.firebasestorage.app",
+            messagingSenderId: "953487415351",
+            appId: "1:953487415351:web:83b1302f68960fa17987b2"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const upcomingList = document.getElementById('upcoming-list');
+        const pastList = document.getElementById('past-list');
+        const pastSection = document.getElementById('past-section');
+
+        // --- Hilfsfunktionen ---
+        function esc(str) {
+            return String(str || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        function parseDate(s) {
+            if (!s) return null;
+            const d = new Date(s + "T00:00:00");
+            return isNaN(d.getTime()) ? null : d;
+        }
+
+        const MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni",
+                        "Juli", "August", "September", "Oktober", "November", "Dezember"];
+
+        // Erzeugt aus Start-/Enddatum einen schönen deutschen Zeitraum-Text
+        function formatRange(start, end) {
+            if (!start && !end) return "";
+            if (start && !end) return `ab ${start.getDate()}. ${MONTHS[start.getMonth()]} ${start.getFullYear()}`;
+            if (!start && end) return `bis ${end.getDate()}. ${MONTHS[end.getMonth()]} ${end.getFullYear()}`;
+
+            const sameYear = start.getFullYear() === end.getFullYear();
+            const sameMonth = sameYear && start.getMonth() === end.getMonth();
+
+            if (sameMonth) {
+                return `${start.getDate()}.–${end.getDate()}. ${MONTHS[end.getMonth()]} ${end.getFullYear()}`;
+            }
+            if (sameYear) {
+                return `${start.getDate()}. ${MONTHS[start.getMonth()]} – ${end.getDate()}. ${MONTHS[end.getMonth()]} ${end.getFullYear()}`;
+            }
+            return `${start.getDate()}. ${MONTHS[start.getMonth()]} ${start.getFullYear()} – ${end.getDate()}. ${MONTHS[end.getMonth()]} ${end.getFullYear()}`;
+        }
+
+        function hoursHtml(hours) {
+            if (!hours || !hours.trim()) return "";
+            const lines = hours.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            if (lines.length === 0) return "";
+            const items = lines.map(l => `<li>${esc(l)}</li>`).join("");
+            return `
+                <div class="exhibition-hours">
+                    <span class="hours-label">Öffnungszeiten</span>
+                    <ul class="hours-list">${items}</ul>
+                </div>`;
+        }
+
+        function buildCard(data, status) {
+            const badge = {
+                current:  '<span class="exhibition-status exhibition-status--current"><span class="pulse-dot"></span> Jetzt zu sehen</span>',
+                upcoming: '<span class="exhibition-status exhibition-status--upcoming">Kommend</span>',
+                past:     '<span class="exhibition-status exhibition-status--past">Vergangen</span>'
+            }[status];
+
+            // Zeitraum: benutzerdefinierter Text hat Vorrang, sonst aus Datum erzeugen
+            const start = parseDate(data.startDate);
+            const end = parseDate(data.endDate);
+            const dateText = (data.dateText && data.dateText.trim())
+                ? esc(data.dateText.trim())
+                : esc(formatRange(start, end));
+
+            // Adresse als Google-Maps-Link
+            let venueHtml = esc(data.venue || "");
+            if (data.address && data.address.trim()) {
+                const q = encodeURIComponent(`${data.venue || ""} ${data.address}`.trim());
+                const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${q}`;
+                venueHtml += `<br><a href="${mapsUrl}" target="_blank" rel="noopener">${esc(data.address)}</a>`;
+            }
+
+            const mediaHtml = (data.imageUrl && data.imageUrl.trim())
+                ? `<div class="exhibition-item-media">
+                       <img src="${esc(data.imageUrl)}" class="grid-img" alt="Ausstellung${data.title ? ' – ' + esc(data.title) : ''} von Petra Jansen" loading="lazy" data-full="${esc(data.imageUrl)}">
+                   </div>`
+                : "";
+
+            const titleHtml = (data.title && data.title.trim())
+                ? `<h3 class="exhibition-item-title">${esc(data.title)}</h3>` : "";
+
+            const descHtml = (data.description && data.description.trim())
+                ? `<p class="exhibition-desc">${esc(data.description).replace(/\r?\n/g, "<br>")}</p>` : "";
+
+            return `
+                <article class="exhibition-item exhibition-item--${status} ${mediaHtml ? 'has-media' : ''}">
+                    ${mediaHtml}
+                    <div class="exhibition-item-body">
+                        ${badge}
+                        ${titleHtml}
+                        ${dateText ? `<p class="exhibition-dates">${dateText}</p>` : ""}
+                        ${venueHtml ? `<p class="exhibition-venue">${venueHtml}</p>` : ""}
+                        ${descHtml}
+                        ${hoursHtml(data.hours)}
+                    </div>
+                </article>`;
+        }
+
+        function classify(data, today) {
+            const start = parseDate(data.startDate);
+            const end = parseDate(data.endDate);
+            if (end && end < today) return "past";
+            if (start && start > today) return "upcoming";
+            return "current"; // läuft gerade oder ohne Datumsangabe
+        }
+
+        function render(docs) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const upcoming = []; // current + upcoming
+            const past = [];
+
+            docs.forEach(data => {
+                const status = classify(data, today);
+                if (status === "past") past.push({ data, status });
+                else upcoming.push({ data, status });
+            });
+
+            // Sortierung: kommende/aktuelle nach Startdatum aufsteigend (laufende zuerst)
+            upcoming.sort((a, b) => {
+                const da = parseDate(a.data.startDate) || parseDate(a.data.endDate) || new Date(8640000000000000);
+                const dbb = parseDate(b.data.startDate) || parseDate(b.data.endDate) || new Date(8640000000000000);
+                return da - dbb;
+            });
+            // Vergangene: neueste zuerst (nach Enddatum absteigend)
+            past.sort((a, b) => {
+                const da = parseDate(a.data.endDate) || parseDate(a.data.startDate) || new Date(-8640000000000000);
+                const dbb = parseDate(b.data.endDate) || parseDate(b.data.startDate) || new Date(-8640000000000000);
+                return dbb - da;
+            });
+
+            if (upcoming.length === 0) {
+                upcomingList.innerHTML = `<p class="exhibition-empty">Aktuell sind keine Ausstellungen geplant. Schauen Sie bald wieder vorbei &ndash; oder folgen Sie mir auf <a href="https://www.instagram.com/acrylpur/" target="_blank" rel="noopener">Instagram</a>.</p>`;
+            } else {
+                upcomingList.innerHTML = upcoming.map(e => buildCard(e.data, e.status)).join("");
+            }
+
+            if (past.length === 0) {
+                pastSection.hidden = true;
+            } else {
+                pastSection.hidden = false;
+                pastList.innerHTML = past.map(e => buildCard(e.data, e.status)).join("");
+            }
+        }
+
+        async function initExhibitions() {
+            try {
+                await signInAnonymously(auth);
+                onSnapshot(collection(db, 'exhibitions'), (snapshot) => {
+                    const docs = [];
+                    snapshot.forEach(d => docs.push(d.data()));
+                    render(docs);
+                }, (error) => {
+                    console.error("Ausstellungen-Fehler:", error);
+                    upcomingList.innerHTML = `<p class="exhibition-empty">Die Ausstellungen konnten nicht geladen werden.</p>`;
+                });
+            } catch (e) {
+                console.error(e);
+                upcomingList.innerHTML = `<p class="exhibition-empty">Die Ausstellungen konnten nicht geladen werden.</p>`;
+            }
+        }
+
+        initExhibitions();
+    </script>
+</body>
+</html>
