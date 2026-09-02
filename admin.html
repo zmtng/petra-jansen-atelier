@@ -524,7 +524,7 @@
             } catch (err) {
                 console.error("Fehler beim Speichern der Ausstellung:", err);
                 exStatus.style.color = "red";
-                exStatus.innerText = "Fehler beim Speichern.";
+                exStatus.innerText = "Fehler beim Speichern: " + (err && (err.code || err.message) ? (err.code || err.message) : err);
             } finally {
                 exSubmit.disabled = false;
             }
