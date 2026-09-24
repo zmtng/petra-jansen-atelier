@@ -79,8 +79,7 @@
     </main>
 
     <footer class="site-footer simple-footer">
-        <p>&copy; 2026 Art by Petra Jansen. Alle Rechte vorbehalten.</p>
-    </footer>
+        <p>&copy; 2026 Art by Petra Jansen. Alle Rechte vorbehalten.</p>    </footer>
 
     <!-- Lightbox Pop-Up (für Ausstellungsbilder) -->
     <div id="lightbox" class="lightbox">
@@ -244,7 +243,7 @@
             });
 
             if (upcoming.length === 0) {
-                upcomingList.innerHTML = `<p class="exhibition-empty">Aktuell sind keine Ausstellungen geplant. Schauen Sie bald wieder vorbei &ndash; oder folgen Sie mir auf <a href="https://www.instagram.com/acrylpur/" target="_blank" rel="noopener">Instagram</a>.</p>`;
+                upcomingList.innerHTML = `<p class="exhibition-empty">Aktuell sind keine Ausstellungen geplant. Schauen Sie bald wieder vorbei &ndash; oder folgen Sie mir auf <a href="https://www.instagram.com/acrylpur/" target="_blank" rel="noopener">Instagram</a>, oder besuchen Sie meinen <a href="https://petrajansenart.etsy.com/" target="_blank" rel="noopener">Etsy-Shop</a>.</p>`;
             } else {
                 upcomingList.innerHTML = upcoming.map(e => buildCard(e.data, e.status)).join("");
             }
