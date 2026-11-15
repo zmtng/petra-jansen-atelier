@@ -203,7 +203,9 @@
             // Adresse als Google-Maps-Link
             let venueHtml = esc(data.venue || "");
             if (data.address && data.address.trim()) {
-                const q = encodeURIComponent(`${data.venue || ""} ${data.address}`.trim());
+                // Nur die Adresse suchen: mit dem Ortsnamen dazu springt Google bei
+                // ungenauen Adressen sonst zu gleichnamigen Firmen (z.B. "Malerei Jansen").
+                const q = encodeURIComponent(data.address.trim());
                 const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${q}`;
                 venueHtml += `<br><a href="${mapsUrl}" target="_blank" rel="noopener">${esc(data.address)}</a>`;
             }
