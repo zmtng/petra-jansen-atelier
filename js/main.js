@@ -25,6 +25,43 @@ window.initAppLogic = () => {
     }
 
     // ==========================================
+    // 0b. MENÜ-BUTTON FÜR DAS HANDY
+    // ==========================================
+    // Wird per JS eingefügt, damit nicht jede HTML-Seite angepasst werden muss.
+    // Sichtbar ist er nur auf schmalen Bildschirmen (siehe CSS .nav-toggle).
+    const header = document.querySelector('.site-header');
+    const nav = header && header.querySelector('.main-nav');
+    if (header && nav && !header.querySelector('.nav-toggle')) {
+        if (!nav.id) nav.id = 'main-nav';
+        const toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.className = 'nav-toggle';
+        toggle.setAttribute('aria-controls', nav.id);
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Menü öffnen');
+        toggle.innerHTML = '<span></span><span></span><span></span>';
+        header.insertBefore(toggle, nav);
+
+        const setOpen = (open) => {
+            header.classList.toggle('nav-open', open);
+            toggle.setAttribute('aria-expanded', String(open));
+            toggle.setAttribute('aria-label', open ? 'Menü schließen' : 'Menü öffnen');
+            setHeaderHeight();
+        };
+        toggle.addEventListener('click', () => setOpen(!header.classList.contains('nav-open')));
+        // Klick außerhalb oder Escape schließt das Menü
+        document.addEventListener('click', (e) => {
+            if (header.classList.contains('nav-open') && !header.contains(e.target)) setOpen(false);
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && header.classList.contains('nav-open')) {
+                setOpen(false);
+                toggle.focus();
+            }
+        });
+    }
+
+    // ==========================================
     // 1. THEME & SICHTBARKEIT (OBSERVER)
     // ==========================================
     // Ein einziger Observer für alle jetzigen und zukünftigen Slides
@@ -105,6 +142,46 @@ window.initAppLogic = () => {
                 goToSlide(currentSlideIndex - 1);
             }
         }, { passive: false });
+
+        // Tastatur: Pfeiltasten, Bild auf/ab, Leertaste, Pos1/Ende
+        window.addEventListener('keydown', (e) => {
+            const lightbox = document.getElementById('lightbox');
+            if (lightbox && lightbox.classList.contains('active')) return;
+            if (e.altKey || e.ctrlKey || e.metaKey) return;
+            const t = e.target;
+            if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+
+            const count = document.querySelectorAll('.presentation-slide').length;
+            let target = null;
+            updateIndexFromScroll();
+            switch (e.key) {
+                case 'ArrowDown':
+                case 'PageDown':
+                    target = currentSlideIndex + 1; break;
+                case ' ':
+                    target = currentSlideIndex + (e.shiftKey ? -1 : 1); break;
+                case 'ArrowUp':
+                case 'PageUp':
+                    target = currentSlideIndex - 1; break;
+                case 'Home':
+                    target = 0; break;
+                case 'End':
+                    target = count - 1; break;
+                default:
+                    return;
+            }
+            e.preventDefault();
+            if (!isAnimating) goToSlide(target);
+        });
+
+        // Mit Tab angesprungene Links/Buttons in den sichtbaren Slide holen
+        document.addEventListener('focusin', (e) => {
+            const slide = e.target.closest && e.target.closest('.presentation-slide');
+            if (!slide) return;
+            const slides = [...document.querySelectorAll('.presentation-slide')];
+            const index = slides.indexOf(slide);
+            if (index !== -1 && index !== currentSlideIndex) goToSlide(index);
+        });
 
         // Touch-Event (Handy)
         let touchStartY = 0;

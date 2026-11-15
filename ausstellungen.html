@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Ausstellungen der Künstlerin Petra Jansen aus Lutzerath – eine Übersicht über kommende, aktuelle und vergangene Ausstellungen ihrer Werke.">
     <title>Veranstaltungen @ Art by Petra Jansen</title>
-    <link rel="stylesheet" href="css/style.css?v=5">
+    <link rel="stylesheet" href="css/style.css?v=6">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://petra-jansen.art/ausstellungen.html">
     <meta property="og:title" content="Petra Jansen | Ausstellungen">
@@ -86,7 +86,8 @@
     </main>
 
     <footer class="site-footer simple-footer">
-        <p>&copy; 2026 Art by Petra Jansen. Alle Rechte vorbehalten.</p>    </footer>
+        <p>&copy; 2026 Art by Petra Jansen. Alle Rechte vorbehalten.</p>
+        <p class="footer-legal"><a href="impressum.html">Impressum</a> &middot; <a href="datenschutz.html">Datenschutz</a></p>    </footer>
 
     <!-- Lightbox Pop-Up (für Ausstellungsbilder) -->
     <div id="lightbox" class="lightbox">
@@ -95,7 +96,7 @@
         <p id="lightbox-caption" class="lightbox-caption"></p>
     </div>
 
-    <script src="js/main.js?v=2"></script>
+    <script src="js/main.js?v=3"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -193,6 +194,13 @@
                 ? `<a href="${esc(linkUrl)}" class="btn exhibition-link" target="_blank" rel="noopener">${esc((data.linkText || "").trim() || (isExhibition ? "Mehr erfahren" : "Zur Anmeldung"))}</a>`
                 : "";
 
+            // "In Kalender eintragen" (nur für laufende/kommende Termine mit Datum)
+            let calHtml = "";
+            if (status !== "past" && parseDate(data.startDate)) {
+                const idx = calendarStore.push(data) - 1;
+                calHtml = `<button type="button" class="btn btn-outline exhibition-link" data-ics="${idx}">In Kalender eintragen</button>`;
+            }
+
             // Zeitraum: benutzerdefinierter Text hat Vorrang, sonst aus Datum erzeugen
             const start = parseDate(data.startDate);
             const end = parseDate(data.endDate);
@@ -232,9 +240,127 @@
                         ${venueHtml ? `<p class="exhibition-venue">${venueHtml}</p>` : ""}
                         ${descHtml}
                         ${hoursHtml(data.hours, isExhibition ? "Öffnungszeiten" : "Termine & Uhrzeiten")}
-                        ${linkHtml}
+                        ${(linkHtml || calHtml) ? `<div class="exhibition-actions">${linkHtml}${calHtml}</div>` : ""}
                     </div>
                 </article>`;
+        }
+
+        // ------------------------------------------------------------
+        //  Kalenderdatei (.ics) – wird komplett im Browser erzeugt
+        // ------------------------------------------------------------
+        let calendarStore = [];
+
+        function eventName(data) {
+            const type = TYPE_LABELS[data.type] ? data.type : "exhibition";
+            return (data.title && data.title.trim())
+                ? data.title.trim()
+                : `${TYPE_LABELS[type]} von Petra Jansen${data.venue ? " – " + data.venue.trim() : ""}`;
+        }
+
+        function icsDate(d) {
+            return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+        }
+
+        function icsText(s) {
+            return String(s || "").replace(/\\/g, "\\\\").replace(/\r?\n/g, "\\n").replace(/([,;])/g, "\\$1");
+        }
+
+        // Zeilen über 75 Zeichen müssen laut iCalendar-Standard umgebrochen werden
+        function icsFold(line) {
+            const out = [];
+            while (line.length > 74) { out.push(line.slice(0, 74)); line = " " + line.slice(74); }
+            out.push(line);
+            return out.join("\r\n");
+        }
+
+        function buildIcs(data) {
+            const start = parseDate(data.startDate);
+            const end = parseDate(data.endDate) || start;
+            const endExclusive = new Date(end); endExclusive.setDate(endExclusive.getDate() + 1); // Ganztägig: Ende ist exklusiv
+
+            const descParts = [];
+            if (data.description) descParts.push(data.description.trim());
+            if (data.hours) descParts.push(data.hours.trim());
+            if (data.linkUrl) descParts.push(data.linkUrl.trim());
+            descParts.push("https://petra-jansen.art/ausstellungen.html");
+
+            const now = new Date();
+            const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+            const lines = [
+                "BEGIN:VCALENDAR",
+                "VERSION:2.0",
+                "PRODID:-//Art by Petra Jansen//Veranstaltungen//DE",
+                "CALSCALE:GREGORIAN",
+                "BEGIN:VEVENT",
+                `UID:${icsDate(start)}-${encodeURIComponent(eventName(data)).slice(0, 40)}@petra-jansen.art`,
+                `DTSTAMP:${stamp}`,
+                `DTSTART;VALUE=DATE:${icsDate(start)}`,
+                `DTEND;VALUE=DATE:${icsDate(endExclusive)}`,
+                `SUMMARY:${icsText(eventName(data))}`,
+                `LOCATION:${icsText([data.venue, data.address].filter(s => s && s.trim()).join(", "))}`,
+                `DESCRIPTION:${icsText(descParts.join("\n\n"))}`,
+                "END:VEVENT",
+                "END:VCALENDAR"
+            ];
+            return lines.map(icsFold).join("\r\n") + "\r\n";
+        }
+
+        document.addEventListener("click", (e) => {
+            const btn = e.target.closest("[data-ics]");
+            if (!btn) return;
+            const data = calendarStore[Number(btn.dataset.ics)];
+            if (!data) return;
+            const blob = new Blob([buildIcs(data)], { type: "text/calendar;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = (eventName(data).replace(/[^\wäöüÄÖÜß -]+/g, "").trim().replace(/\s+/g, "-") || "termin") + ".ics";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        });
+
+        // ------------------------------------------------------------
+        //  Strukturierte Daten (schema.org/Event), damit Google die
+        //  Termine in den Suchergebnissen anzeigen kann
+        // ------------------------------------------------------------
+        function updateStructuredData(entries) {
+            const events = entries
+                .filter(e => parseDate(e.data.startDate))
+                .map(({ data }) => {
+                    const ev = {
+                        "@context": "https://schema.org",
+                        "@type": data.type === "course" ? "EducationEvent" : (data.type === "exhibition" || !data.type ? "ExhibitionEvent" : "Event"),
+                        "name": eventName(data),
+                        "startDate": data.startDate,
+                        "endDate": data.endDate || data.startDate,
+                        "eventStatus": "https://schema.org/EventScheduled",
+                        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+                        "location": {
+                            "@type": "Place",
+                            "name": (data.venue || "").trim() || "Siehe Beschreibung",
+                            "address": (data.address || "").trim() || (data.venue || "").trim()
+                        },
+                        "organizer": { "@type": "Person", "name": "Petra Jansen", "url": "https://petra-jansen.art/" },
+                        "performer": { "@type": "Person", "name": "Petra Jansen" }
+                    };
+                    if (data.description && data.description.trim()) ev.description = data.description.trim();
+                    if (data.imageUrl && data.imageUrl.trim()) ev.image = [data.imageUrl.trim()];
+                    if (/^https?:\/\//i.test((data.linkUrl || "").trim())) {
+                        ev.offers = { "@type": "Offer", "url": data.linkUrl.trim(), "availability": "https://schema.org/InStock" };
+                    }
+                    return ev;
+                });
+
+            let tag = document.getElementById("events-jsonld");
+            if (!tag) {
+                tag = document.createElement("script");
+                tag.type = "application/ld+json";
+                tag.id = "events-jsonld";
+                document.head.appendChild(tag);
+            }
+            tag.textContent = JSON.stringify(events);
         }
 
         // Status rein nach Datum: vergangen / läuft gerade / kommt noch
@@ -282,9 +408,11 @@
             // 2. Oben "Aktuelle Veranstaltungen" (laufen gerade),
             //    darunter "Nächste Veranstaltungen" (alle kommenden, früheste zuerst und hervorgehoben).
             loader.hidden = true;
+            calendarStore = [];
             fillSection(currentSection, currentList, current);
             fillSection(nextSection, nextList, upcoming);
             fillSection(pastSection, pastList, past);
+            updateStructuredData(current.concat(upcoming));
 
             if (current.length === 0 && upcoming.length === 0) {
                 nextSection.hidden = false;

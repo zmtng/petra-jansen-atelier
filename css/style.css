@@ -609,6 +609,45 @@ h1, h2, h3 { font-weight: 300; }
     color: var(--text-muted);
 }
 
+/* Impressum/Datenschutz-Links im Footer */
+.footer-legal {
+    margin-top: 6px;
+}
+
+.footer-legal a {
+    color: var(--text-muted);
+    text-decoration: none;
+}
+
+.footer-legal a:hover {
+    color: var(--text-main);
+    text-decoration: underline;
+}
+
+/* Rechtstexte (Impressum, Datenschutz) */
+.legal-text h2 {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.legal-text p,
+.legal-text ul {
+    margin-bottom: 1.5rem;
+}
+
+.legal-text ul {
+    padding-left: 1.25rem;
+}
+
+.legal-text li {
+    margin-bottom: 0.5rem;
+}
+
+.legal-text a {
+    color: var(--text-main);
+}
+
 /* =========================================
    RESPONSIVE FÜR GLAS-SEITEN
    ========================================= */
@@ -965,8 +1004,16 @@ h1, h2, h3 { font-weight: 300; }
     box-shadow: 0 16px 45px rgba(252, 138, 111, 0.18);
 }
 
-.exhibition-link {
+.exhibition-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
     margin-top: 0.5rem;
+}
+
+button.exhibition-link {
+    cursor: pointer;
+    font-family: inherit;
 }
 
 /* Vergangene Ausstellungen dezenter darstellen */
@@ -1301,24 +1348,88 @@ main {
 /* =========================================
    MOBILE ANPASSUNG (Responsive Design)
    ========================================= */
-@media (max-width: 768px) {
+/* Menü-Button (wird per JS eingefügt). Ab 1100px Breite abwärts passen die
+   sieben Menüpunkte nicht mehr in eine Zeile, daher dann das Klapp-Menü. */
+.nav-toggle {
+    display: none;
+}
+
+@media (max-width: 1100px) {
     .site-header {
-        flex-direction: column;
-        gap: 0.5rem; 
-        padding: 12px 5%; 
+        flex-wrap: wrap;
+        gap: 0;
+        padding: 12px 5%;
     }
-    
+
+    .logo a {
+        font-size: 1rem;
+        letter-spacing: 2px;
+    }
+
+    .nav-toggle {
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 44px;
+        height: 44px;
+        padding: 10px;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .nav-toggle span {
+        display: block;
+        height: 2px;
+        width: 100%;
+        background: var(--text-main);
+        border-radius: 2px;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .nav-open .nav-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
+    .nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Menü eingeklappt, bis der Button gedrückt wird */
+    .site-header .main-nav {
+        display: none;
+        width: 100%;
+    }
+
+    .site-header.nav-open .main-nav {
+        display: block;
+    }
+
     .main-nav ul {
-        flex-wrap: wrap; 
-        justify-content: center; 
-        gap: 8px 15px; 
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        padding: 0.5rem 0 0.25rem 0;
+    }
+
+    .main-nav li {
+        width: 100%;
+        text-align: center;
     }
 
     .main-nav a {
-        font-size: 0.8rem; 
-        white-space: nowrap; 
+        display: block;
+        font-size: 0.95rem;
+        padding: 0.7rem 0;
+        white-space: nowrap;
     }
 
+    .main-nav a:hover,
+    .main-nav a.active {
+        border-bottom: none;
+        padding-bottom: 0.7rem;
+        font-weight: 600;
+    }
+}
+
+@media (max-width: 768px) {
     .massive-title { font-size: 2.5rem; }
     .presentation-slide h2 { font-size: 2rem; }
     .presentation-slide p { font-size: 1rem; }
