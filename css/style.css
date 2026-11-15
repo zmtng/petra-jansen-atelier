@@ -675,7 +675,8 @@ h1, h2, h3 { font-weight: 300; }
 .cta-grid {
     display: grid;
     /* Macht automatisch 2 Spalten auf dem PC und 1 Spalte auf dem Handy */
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    /* min(): auf sehr schmalen Handys darf die Karte schmaler als 300px werden */
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
     gap: 2rem;
     width: 100%;
 }
@@ -704,10 +705,41 @@ h1, h2, h3 { font-weight: 300; }
     background: rgba(255, 255, 255, 0.55);
 }
 
+.cta-card {
+    min-width: 0; /* erlaubt der Karte im Grid zu schrumpfen */
+}
+
 .cta-card h2 {
     font-size: 2.2rem;
     margin-bottom: 1rem;
     color: var(--text-main);
+    max-width: 100%;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+/* Große Seitenüberschrift (Galerie, Veranstaltungen): wächst mit der Bildschirmbreite,
+   damit lange Wörter wie "Veranstaltungen" auf dem Handy nicht aus der Box ragen */
+.massive-title.page-hero-title {
+    font-size: clamp(1.5rem, 7.5vw, 3rem);
+    overflow-wrap: break-word;
+}
+
+@media (max-width: 480px) {
+    .massive-title.page-hero-title {
+        letter-spacing: 1px;
+    }
+}
+
+@media (max-width: 768px) {
+    .cta-card {
+        padding: 2rem 1.25rem;
+    }
+
+    /* Lange Wörter wie "Veranstaltungen" passen so in die Karte */
+    .presentation-slide .cta-card h2 {
+        font-size: clamp(1.5rem, 7.5vw, 2rem);
+    }
 }
 
 .cta-card p {
