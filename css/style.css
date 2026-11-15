@@ -989,6 +989,26 @@ h1, h2, h3 { font-weight: 300; }
     margin-bottom: 1rem;
 }
 
+/* Beschriftete Angaben (Datum, Ort, Beschreibung) in der Übersichtskarte */
+.exhibition-field {
+    margin-bottom: 1rem;
+}
+
+.exhibition-field .field-label {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.exhibition-field .exhibition-dates,
+.exhibition-field .exhibition-venue,
+.exhibition-field .exhibition-desc {
+    margin-bottom: 0;
+}
+
 /* Öffnungszeiten linksbündig innerhalb der Übersichtskarte */
 .exhibition-item .exhibition-hours .hours-list {
     justify-content: flex-start;

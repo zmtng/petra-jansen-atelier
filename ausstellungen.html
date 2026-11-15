@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Ausstellungen der Künstlerin Petra Jansen aus Lutzerath – eine Übersicht über kommende, aktuelle und vergangene Ausstellungen ihrer Werke.">
     <title>Veranstaltungen @ Art by Petra Jansen</title>
-    <link rel="stylesheet" href="css/style.css?v=7">
+    <link rel="stylesheet" href="css/style.css?v=8">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://petra-jansen.art/ausstellungen.html">
     <meta property="og:title" content="Petra Jansen | Ausstellungen">
@@ -230,15 +230,28 @@
             const descHtml = (data.description && data.description.trim())
                 ? `<p class="exhibition-desc">${esc(data.description).replace(/\r?\n/g, "<br>")}</p>` : "";
 
+            // Beschriftungen, damit Besucher sofort sehen, was welche Angabe bedeutet
+            const sameDay = start && (!end || start.toDateString() === end.toDateString());
+            const dateLabel = sameDay ? "Datum" : "Zeitraum";
+            const venueLabel = isExhibition ? "Ausstellungsort" : "Veranstaltungsort";
+            const descLabel = {
+                exhibition: "Über die Ausstellung",
+                course: "Kursinhalt",
+                workshop: "Über den Workshop",
+                other: "Beschreibung"
+            }[type];
+            const field = (cls, label, inner) =>
+                `<div class="exhibition-field ${cls}"><span class="field-label">${label}</span>${inner}</div>`;
+
             return `
                 <article class="exhibition-item exhibition-item--${status} ${mediaHtml ? 'has-media' : ''}">
                     ${mediaHtml}
                     <div class="exhibition-item-body">
                         <div class="exhibition-tags">${badge}${typeTag}</div>
                         ${titleHtml}
-                        ${dateText ? `<p class="exhibition-dates">${dateText}</p>` : ""}
-                        ${venueHtml ? `<p class="exhibition-venue">${venueHtml}</p>` : ""}
-                        ${descHtml}
+                        ${dateText ? field("field-dates", dateLabel, `<p class="exhibition-dates">${dateText}</p>`) : ""}
+                        ${venueHtml ? field("field-venue", venueLabel, `<p class="exhibition-venue">${venueHtml}</p>`) : ""}
+                        ${descHtml ? field("field-desc", descLabel, descHtml) : ""}
                         ${hoursHtml(data.hours, isExhibition ? "Öffnungszeiten" : "Termine & Uhrzeiten")}
                         ${(linkHtml || calHtml) ? `<div class="exhibition-actions">${linkHtml}${calHtml}</div>` : ""}
                     </div>
