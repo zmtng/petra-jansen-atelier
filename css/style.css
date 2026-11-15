@@ -959,8 +959,8 @@ h1, h2, h3 { font-weight: 300; }
     color: #3d6b3d;
 }
 
-/* Hervorgehobene "Nächste Veranstaltung" */
-.exhibition-list--next .exhibition-item {
+/* Die allernächste Veranstaltung hervorheben */
+.exhibition-list--next .exhibition-item:first-child {
     border: 2px solid rgba(252, 138, 111, 0.55);
     box-shadow: 0 16px 45px rgba(252, 138, 111, 0.18);
 }

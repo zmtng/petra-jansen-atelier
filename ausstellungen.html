@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Ausstellungen der Künstlerin Petra Jansen aus Lutzerath – eine Übersicht über kommende, aktuelle und vergangene Ausstellungen ihrer Werke.">
     <title>Veranstaltungen @ Art by Petra Jansen</title>
-    <link rel="stylesheet" href="css/style.css?v=4">
+    <link rel="stylesheet" href="css/style.css?v=5">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://petra-jansen.art/ausstellungen.html">
     <meta property="og:title" content="Petra Jansen | Ausstellungen">
@@ -53,16 +53,16 @@
 
             <p class="exhibition-loader" id="events-loader">Veranstaltungen werden geladen&hellip;</p>
 
-            <!-- Nächste Veranstaltung (wird automatisch nach Datum befüllt) -->
-            <section class="exhibition-section" id="next-section" hidden>
-                <h2 class="exhibition-section-title">Nächste Veranstaltung</h2>
-                <div class="exhibition-list exhibition-list--next" id="next-list"></div>
-            </section>
-
-            <!-- Aktuelle Veranstaltungen: laufende + weitere kommende -->
+            <!-- Aktuelle Veranstaltungen: laufen gerade (wird automatisch nach Datum befüllt) -->
             <section class="exhibition-section" id="current-section" hidden>
                 <h2 class="exhibition-section-title">Aktuelle Veranstaltungen</h2>
                 <div class="exhibition-list" id="current-list"></div>
+            </section>
+
+            <!-- Nächste Veranstaltungen: alle kommenden, die erste wird hervorgehoben -->
+            <section class="exhibition-section" id="next-section" hidden>
+                <h2 class="exhibition-section-title">Nächste Veranstaltungen</h2>
+                <div class="exhibition-list exhibition-list--next" id="next-list"></div>
             </section>
 
             <!-- Vergangene Veranstaltungen (wird bei Bedarf eingeblendet) -->
@@ -277,20 +277,16 @@
             upcoming.sort((a, b) => startOf(a) - startOf(b));
             past.sort((a, b) => endOf(b) - endOf(a)); // neueste zuerst
 
-            // 2. "Nächste Veranstaltung": die kommende Veranstaltung mit dem frühesten Startdatum.
-            const next = upcoming.splice(0, 1);
-
-            // 3. "Aktuelle Veranstaltungen": laufende zuerst, danach alle weiteren kommenden.
-            const currentAll = current.concat(upcoming);
-
+            // 2. Oben "Aktuelle Veranstaltungen" (laufen gerade),
+            //    darunter "Nächste Veranstaltungen" (alle kommenden, früheste zuerst und hervorgehoben).
             loader.hidden = true;
-            fillSection(nextSection, nextList, next);
-            fillSection(currentSection, currentList, currentAll);
+            fillSection(currentSection, currentList, current);
+            fillSection(nextSection, nextList, upcoming);
             fillSection(pastSection, pastList, past);
 
-            if (next.length === 0 && currentAll.length === 0) {
-                currentSection.hidden = false;
-                currentList.innerHTML = `<p class="exhibition-empty">Aktuell sind keine Veranstaltungen geplant. Schauen Sie bald wieder vorbei &ndash; oder folgen Sie mir auf <a href="https://www.instagram.com/acrylpur/" target="_blank" rel="noopener">Instagram</a>, oder besuchen Sie meinen <a href="https://petrajansenart.etsy.com/" target="_blank" rel="noopener">Etsy-Shop</a>.</p>`;
+            if (current.length === 0 && upcoming.length === 0) {
+                nextSection.hidden = false;
+                nextList.innerHTML = `<p class="exhibition-empty">Aktuell sind keine Veranstaltungen geplant. Schauen Sie bald wieder vorbei &ndash; oder folgen Sie mir auf <a href="https://www.instagram.com/acrylpur/" target="_blank" rel="noopener">Instagram</a>, oder besuchen Sie meinen <a href="https://petrajansenart.etsy.com/" target="_blank" rel="noopener">Etsy-Shop</a>.</p>`;
             }
         }
 
