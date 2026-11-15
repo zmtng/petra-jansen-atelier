@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin @ Art by Petra Jansen</title>
-    <link rel="stylesheet" href="css/style.css?v=3">
+    <link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body class="theme-3 fluid-background">
 
@@ -38,7 +38,7 @@
 
                 <div class="admin-tabs">
                     <button class="admin-tab active" data-target="tab-gallery">Galerie</button>
-                    <button class="admin-tab" data-target="tab-exhibitions">Ausstellungen</button>
+                    <button class="admin-tab" data-target="tab-exhibitions">Veranstaltungen</button>
                 </div>
 
                 <!-- ============ TAB: GALERIE ============ -->
@@ -78,21 +78,42 @@
 
                 <!-- ============ TAB: AUSSTELLUNGEN ============ -->
                 <div id="tab-exhibitions" class="admin-tab-content">
-                    <h1 class="page-title">Ausstellungs-Verwaltung</h1>
-                    <p class="page-subtitle">Hier legst du kommende, aktuelle und vergangene Ausstellungen an. Die Seite sortiert automatisch nach dem Enddatum.</p>
+                    <h1 class="page-title">Veranstaltungs-Verwaltung</h1>
+                    <p class="page-subtitle">Hier legst du Ausstellungen, Kurse und Workshops an. Die Seite ordnet sie automatisch anhand von Start- und Enddatum in „Nächste Veranstaltung“, „Aktuelle Veranstaltungen“ und „Vergangene Veranstaltungen“ ein.</p>
 
                     <div class="upload-card">
-                        <h3 id="ex-form-title">Neue Ausstellung hinzufügen</h3>
+                        <h3 id="ex-form-title">Neue Veranstaltung hinzufügen</h3>
                         <form id="exhibition-form" class="glass-form" style="margin-top: 1rem;">
 
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <div class="form-group" style="flex: 1; min-width: 160px;">
+                                    <label>Art der Veranstaltung</label>
+                                    <select id="ex-type">
+                                        <option value="exhibition">Ausstellung</option>
+                                        <option value="course">Kurs</option>
+                                        <option value="workshop">Workshop</option>
+                                        <option value="other">Sonstige Veranstaltung</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="flex: 1; min-width: 160px;">
+                                    <label>Anzeigen im Bereich</label>
+                                    <select id="ex-placement">
+                                        <option value="auto">Automatisch nach Datum (empfohlen)</option>
+                                        <option value="next">Immer „Nächste Veranstaltung“</option>
+                                        <option value="current">Immer „Aktuelle Veranstaltungen“</option>
+                                        <option value="past">Immer „Vergangene Veranstaltungen“</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="form-group">
-                                <label>Titel der Ausstellung (optional)</label>
+                                <label>Titel (optional)</label>
                                 <input type="text" id="ex-title" placeholder="z.B. Farbräume – Abstrakte Malerei">
                             </div>
 
                             <div class="form-group">
                                 <label>Ort / Veranstalter *Pflichtfeld*</label>
-                                <input type="text" id="ex-venue" required placeholder="z.B. Kreisverwaltung Cochem-Zell · Foyer">
+                                <input type="text" id="ex-venue" required placeholder="z.B. Kreisverwaltung Cochem-Zell · Foyer oder VHS Cochem">
                             </div>
 
                             <div class="form-group">
@@ -117,13 +138,24 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Öffnungszeiten (optional – eine Zeile pro Eintrag)</label>
+                                <label id="ex-hours-label">Öffnungszeiten (optional – eine Zeile pro Eintrag)</label>
                                 <textarea id="ex-hours" rows="4" placeholder="Mo–Mi 7:30–16:00&#10;Do 7:30–17:00&#10;Fr 7:30–13:00&#10;Sa & So geschlossen"></textarea>
                             </div>
 
                             <div class="form-group">
                                 <label>Beschreibung (optional)</label>
-                                <textarea id="ex-desc" rows="3" placeholder="Ein paar Worte zur Ausstellung..."></textarea>
+                                <textarea id="ex-desc" rows="3" placeholder="Ein paar Worte zur Veranstaltung..."></textarea>
+                            </div>
+
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <div class="form-group" style="flex: 2; min-width: 220px;">
+                                    <label>Link, z.B. zur VHS-Anmeldung (optional)</label>
+                                    <input type="url" id="ex-link" placeholder="https://www.vhs-cochem.de/...">
+                                </div>
+                                <div class="form-group" style="flex: 1; min-width: 160px;">
+                                    <label>Button-Text (optional)</label>
+                                    <input type="text" id="ex-linktext" placeholder="Leer = „Zur Anmeldung“">
+                                </div>
                             </div>
 
                             <div class="form-group">
@@ -132,15 +164,15 @@
                                 <p id="ex-current-image" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; display: none;"></p>
                             </div>
 
-                            <button type="submit" id="ex-submit" class="btn">Ausstellung speichern</button>
+                            <button type="submit" id="ex-submit" class="btn">Veranstaltung speichern</button>
                             <button type="button" id="ex-cancel" class="btn btn-outline" style="display: none; margin-left: 10px;">Bearbeiten abbrechen</button>
                             <p id="ex-status" style="margin-top: 10px; font-weight: bold;"></p>
                         </form>
                     </div>
 
-                    <h3>Angelegte Ausstellungen</h3>
+                    <h3>Angelegte Veranstaltungen</h3>
                     <div id="admin-exhibition-list">
-                        <p>Lade Ausstellungen aus der Datenbank...</p>
+                        <p>Lade Veranstaltungen aus der Datenbank...</p>
                     </div>
                 </div><!-- /tab-exhibitions -->
             </div>
@@ -393,6 +425,26 @@
         const exFormTitle = document.getElementById('ex-form-title');
         const exCurrentImage = document.getElementById('ex-current-image');
         const exList = document.getElementById('admin-exhibition-list');
+        const exType = document.getElementById('ex-type');
+        const exPlacement = document.getElementById('ex-placement');
+        const exLink = document.getElementById('ex-link');
+        const exLinkText = document.getElementById('ex-linktext');
+        const exHoursLabel = document.getElementById('ex-hours-label');
+
+        const TYPE_LABELS = { exhibition: "Ausstellung", course: "Kurs", workshop: "Workshop", other: "Veranstaltung" };
+        const PLACEMENT_LABELS = { next: "fest: Nächste", current: "fest: Aktuell", past: "fest: Vergangen" };
+
+        // Bei Kursen heißt das Feld "Termine & Uhrzeiten" statt "Öffnungszeiten"
+        function updateHoursLabel() {
+            const isExhibition = exType.value === "exhibition";
+            exHoursLabel.innerText = isExhibition
+                ? "Öffnungszeiten (optional – eine Zeile pro Eintrag)"
+                : "Termine & Uhrzeiten (optional – eine Zeile pro Eintrag)";
+            exHours.placeholder = isExhibition
+                ? "Mo–Mi 7:30–16:00\nDo 7:30–17:00\nFr 7:30–13:00\nSa & So geschlossen"
+                : "6 Termine, jeweils dienstags\n18:00–20:30 Uhr\nMaterialkosten: 15 €";
+        }
+        exType.addEventListener('change', updateHoursLabel);
 
         let editingId = null;
         let editingImageUrl = "";
@@ -423,6 +475,7 @@
             if (!start && end) return `bis ${end.getDate()}. ${AMONTHS[end.getMonth()]} ${end.getFullYear()}`;
             const sameYear = start.getFullYear() === end.getFullYear();
             const sameMonth = sameYear && start.getMonth() === end.getMonth();
+            if (sameMonth && start.getDate() === end.getDate()) return `${start.getDate()}. ${AMONTHS[start.getMonth()]} ${start.getFullYear()}`;
             if (sameMonth) return `${start.getDate()}.–${end.getDate()}. ${AMONTHS[end.getMonth()]} ${end.getFullYear()}`;
             if (sameYear) return `${start.getDate()}. ${AMONTHS[start.getMonth()]} – ${end.getDate()}. ${AMONTHS[end.getMonth()]} ${end.getFullYear()}`;
             return `${start.getDate()}. ${AMONTHS[start.getMonth()]} ${start.getFullYear()} – ${end.getDate()}. ${AMONTHS[end.getMonth()]} ${end.getFullYear()}`;
@@ -434,16 +487,17 @@
             const e = parseISO(data.endDate);
             if (e && e < today) return "Vergangen";
             if (s && s > today) return "Kommend";
-            return "Aktuell";
+            return "Läuft";
         }
 
         function resetExForm() {
             exForm.reset();
+            updateHoursLabel();
             editingId = null;
             editingImageUrl = "";
             editingStoragePath = "";
-            exFormTitle.innerText = "Neue Ausstellung hinzufügen";
-            exSubmit.innerText = "Ausstellung speichern";
+            exFormTitle.innerText = "Neue Veranstaltung hinzufügen";
+            exSubmit.innerText = "Veranstaltung speichern";
             exCancel.style.display = "none";
             exCurrentImage.style.display = "none";
             exCurrentImage.innerText = "";
@@ -462,6 +516,12 @@
             if (end < start) {
                 exStatus.style.color = "red";
                 exStatus.innerText = "Das Enddatum darf nicht vor dem Startdatum liegen.";
+                return;
+            }
+            const linkUrl = exLink.value.trim();
+            if (linkUrl && !/^https?:\/\//i.test(linkUrl)) {
+                exStatus.style.color = "red";
+                exStatus.innerText = "Der Link muss mit http:// oder https:// beginnen.";
                 return;
             }
 
@@ -496,6 +556,10 @@
                 }
 
                 const payload = {
+                    type: exType.value,
+                    placement: exPlacement.value,
+                    linkUrl,
+                    linkText: exLinkText.value.trim(),
                     title: exTitle.value.trim(),
                     venue,
                     address: exAddress.value.trim(),
@@ -517,7 +581,7 @@
                 }
 
                 exStatus.style.color = "green";
-                exStatus.innerText = editingId ? "Ausstellung aktualisiert!" : "Ausstellung gespeichert!";
+                exStatus.innerText = editingId ? "Veranstaltung aktualisiert!" : "Veranstaltung gespeichert!";
                 resetExForm();
                 setTimeout(() => { exStatus.innerText = ""; }, 3000);
 
@@ -538,7 +602,7 @@
             onSnapshot(collection(db, 'exhibitions'), (snapshot) => {
                 exCache = {};
                 if (snapshot.empty) {
-                    exList.innerHTML = "<p>Noch keine Ausstellungen angelegt.</p>";
+                    exList.innerHTML = "<p>Noch keine Veranstaltungen angelegt.</p>";
                     return;
                 }
 
@@ -561,10 +625,13 @@
                         : adminFormatRange(data.startDate, data.endDate);
                     const thumb = data.imageUrl
                         ? `<img src="${data.imageUrl}" class="ea-thumb" alt="">` : "";
+                    const typeLabel = TYPE_LABELS[data.type] || TYPE_LABELS.exhibition;
+                    const pin = PLACEMENT_LABELS[data.placement]
+                        ? ` &middot; ${PLACEMENT_LABELS[data.placement]}` : "";
                     card.innerHTML = `
                         ${thumb}
-                        <span class="ea-badge">${adminStatus(data)}</span>
-                        <h4>${escapeHtml(data.title || data.venue || 'Ausstellung')}</h4>
+                        <span class="ea-badge">${typeLabel} &middot; ${adminStatus(data)}${pin}</span>
+                        <h4>${escapeHtml(data.title || data.venue || typeLabel)}</h4>
                         <p class="ea-meta">${escapeHtml(range)}${data.venue ? ' &middot; ' + escapeHtml(data.venue) : ''}</p>
                         <button class="btn-edit btn-ex-edit" data-id="${data.id}" style="background: #4CAF50; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer;">Bearbeiten</button>
                         <button class="btn-delete btn-ex-delete" data-id="${data.id}" data-path="${data.storagePath || ''}">Löschen</button>
@@ -582,7 +649,7 @@
         function setupExButtons() {
             document.querySelectorAll('.btn-ex-delete').forEach(btn => {
                 btn.onclick = async () => {
-                    if (!confirm("Ausstellung wirklich löschen?")) return;
+                    if (!confirm("Veranstaltung wirklich löschen?")) return;
                     btn.disabled = true;
                     btn.innerText = "Lösche...";
                     const id = btn.dataset.id;
@@ -596,7 +663,7 @@
                         if (editingId === id) resetExForm();
                     } catch (e) {
                         console.error("Fehler beim Löschen:", e);
-                        alert("Die Ausstellung konnte nicht gelöscht werden: " + e.message);
+                        alert("Die Veranstaltung konnte nicht gelöscht werden: " + e.message);
                         btn.disabled = false;
                         btn.innerText = "Löschen";
                     }
@@ -615,6 +682,11 @@
             editingImageUrl = data.imageUrl || "";
             editingStoragePath = data.storagePath || "";
 
+            exType.value = TYPE_LABELS[data.type] ? data.type : "exhibition";
+            exPlacement.value = PLACEMENT_LABELS[data.placement] ? data.placement : "auto";
+            exLink.value = data.linkUrl || "";
+            exLinkText.value = data.linkText || "";
+            updateHoursLabel();
             exTitle.value = data.title || "";
             exVenue.value = data.venue || "";
             exAddress.value = data.address || "";
@@ -625,7 +697,7 @@
             exDesc.value = data.description || "";
             exImage.value = "";
 
-            exFormTitle.innerText = "Ausstellung bearbeiten";
+            exFormTitle.innerText = "Veranstaltung bearbeiten";
             exSubmit.innerText = "Änderungen speichern";
             exCancel.style.display = "inline-block";
 

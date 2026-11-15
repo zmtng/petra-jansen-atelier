@@ -573,6 +573,7 @@ h1, h2, h3 { font-weight: 300; }
 }
 
 .glass-form input,
+.glass-form select,
 .glass-form textarea {
     width: 100%;
     padding: 15px;
@@ -586,6 +587,7 @@ h1, h2, h3 { font-weight: 300; }
 }
 
 .glass-form input:focus,
+.glass-form select:focus,
 .glass-form textarea:focus {
     outline: none;
     background: rgba(255, 255, 255, 0.8);
@@ -923,6 +925,48 @@ h1, h2, h3 { font-weight: 300; }
 
 .exhibition-item .exhibition-hours .hours-label {
     text-align: left;
+}
+
+/* Status-Badge + Art der Veranstaltung nebeneinander */
+.exhibition-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.exhibition-tags .exhibition-status {
+    margin-bottom: 0;
+}
+
+.exhibition-type {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+    font-weight: 600;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    color: var(--text-main);
+}
+
+.exhibition-type--course,
+.exhibition-type--workshop {
+    background: rgba(120, 170, 120, 0.18);
+    border-color: transparent;
+    color: #3d6b3d;
+}
+
+/* Hervorgehobene "Nächste Veranstaltung" */
+.exhibition-list--next .exhibition-item {
+    border: 2px solid rgba(252, 138, 111, 0.55);
+    box-shadow: 0 16px 45px rgba(252, 138, 111, 0.18);
+}
+
+.exhibition-link {
+    margin-top: 0.5rem;
 }
 
 /* Vergangene Ausstellungen dezenter darstellen */
