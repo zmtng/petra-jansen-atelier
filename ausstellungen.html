@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Ausstellungen der Künstlerin Petra Jansen aus Lutzerath – eine Übersicht über kommende, aktuelle und vergangene Ausstellungen ihrer Werke.">
-    <title>Ausstellungen @ Art by Petra Jansen</title>
+    <title>Veranstaltungen @ Art by Petra Jansen</title>
     <link rel="stylesheet" href="css/style.css?v=4">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://petra-jansen.art/ausstellungen.html">
@@ -29,7 +29,7 @@
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="galerie.html">Galerie</a></li>
-                <li><a href="ausstellungen.html" class="active">Ausstellungen</a></li>
+                <li><a href="ausstellungen.html" class="active">Veranstaltungen</a></li>
                 <li><a href="ueber-mich.html">Über mich</a></li>
                 <li><a href="kontakt.html">Kontakt</a></li>
                 <li><a href="gaestebuch.html">Gästebuch</a></li>
@@ -44,7 +44,7 @@
 
             <!-- Kopfbereich -->
             <div style="text-align: center; margin-bottom: 2.5rem;">
-                <h1 class="massive-title" style="font-size: 3rem;">Ausstellungen &amp; Kurse</h1>
+                <h1 class="massive-title" style="font-size: 3rem;">Veranstaltungen</h1>
                 <p class="page-subtitle" style="max-width: 620px; margin: 0.75rem auto 0 auto;">
                     Erleben Sie meine Werke im Original oder malen Sie selbst in einem meiner Kurse.
                     Hier finden Sie alle kommenden, aktuellen und vergangenen Veranstaltungen.
@@ -258,43 +258,27 @@
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
-            // 1. Jeden Eintrag einem Bereich zuordnen.
-            //    "placement" aus dem Admin-Bereich überschreibt die Automatik,
-            //    "auto" (oder nicht gesetzt) entscheidet anhand des Datums.
-            const pinnedNext = [];
+            // 1. Jeden Eintrag anhand des Datums einem Bereich zuordnen.
+            //    Einzige Ausnahme: placement "past" aus dem Admin-Bereich
+            //    schiebt einen Eintrag vorzeitig zu den vergangenen (z.B. bei Absage).
             const current = [];  // läuft gerade
             const upcoming = []; // startet erst noch
             const past = [];
 
             docs.forEach(data => {
                 const status = classify(data, today);
-                const entry = { data, status };
-                switch (data.placement) {
-                    // Bei fester Zuordnung soll das Badge zum Bereich passen
-                    case "next":
-                        if (status === "past") entry.status = "upcoming";
-                        pinnedNext.push(entry); break;
-                    case "current":
-                        if (status === "past") entry.status = "current";
-                        current.push(entry); break;
-                    case "past":
-                        entry.status = "past";
-                        past.push(entry); break;
-                    default:
-                        if (status === "past") past.push(entry);
-                        else if (status === "upcoming") upcoming.push(entry);
-                        else current.push(entry);
-                }
+                const entry = { data, status: data.placement === "past" ? "past" : status };
+                if (entry.status === "past") past.push(entry);
+                else if (entry.status === "upcoming") upcoming.push(entry);
+                else current.push(entry);
             });
 
-            pinnedNext.sort((a, b) => startOf(a) - startOf(b));
             current.sort((a, b) => startOf(a) - startOf(b));
             upcoming.sort((a, b) => startOf(a) - startOf(b));
             past.sort((a, b) => endOf(b) - endOf(a)); // neueste zuerst
 
-            // 2. "Nächste Veranstaltung": manuell festgelegte, sonst die
-            //    kommende Veranstaltung mit dem frühesten Startdatum.
-            const next = pinnedNext.length > 0 ? pinnedNext : upcoming.splice(0, 1);
+            // 2. "Nächste Veranstaltung": die kommende Veranstaltung mit dem frühesten Startdatum.
+            const next = upcoming.splice(0, 1);
 
             // 3. "Aktuelle Veranstaltungen": laufende zuerst, danach alle weiteren kommenden.
             const currentAll = current.concat(upcoming);

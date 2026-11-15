@@ -98,10 +98,8 @@
                                 <div class="form-group" style="flex: 1; min-width: 160px;">
                                     <label>Anzeigen im Bereich</label>
                                     <select id="ex-placement">
-                                        <option value="auto">Automatisch nach Datum (empfohlen)</option>
-                                        <option value="next">Immer „Nächste Veranstaltung“</option>
-                                        <option value="current">Immer „Aktuelle Veranstaltungen“</option>
-                                        <option value="past">Immer „Vergangene Veranstaltungen“</option>
+                                        <option value="auto">Automatisch nach Datum</option>
+                                        <option value="past">Vergangene Veranstaltungen (z.B. bei Absage)</option>
                                     </select>
                                 </div>
                             </div>
@@ -432,7 +430,8 @@
         const exHoursLabel = document.getElementById('ex-hours-label');
 
         const TYPE_LABELS = { exhibition: "Ausstellung", course: "Kurs", workshop: "Workshop", other: "Veranstaltung" };
-        const PLACEMENT_LABELS = { next: "fest: Nächste", current: "fest: Aktuell", past: "fest: Vergangen" };
+        // Nur "past" überschreibt die Datumslogik; alte Werte "next"/"current" gelten als automatisch
+        const PLACEMENT_LABELS = { past: "manuell: Vergangen" };
 
         // Bei Kursen heißt das Feld "Termine & Uhrzeiten" statt "Öffnungszeiten"
         function updateHoursLabel() {
